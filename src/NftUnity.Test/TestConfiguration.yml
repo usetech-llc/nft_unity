@@ -1,0 +1,4 @@
+﻿WsEndpoint: ws://localhost:9944
+Account1:
+  Address: 123
+  PrivateKey: 213
