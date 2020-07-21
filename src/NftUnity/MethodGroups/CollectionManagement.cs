@@ -1,81 +1,43 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using NftUnity.Extensions;
 using NftUnity.Models;
 using Polkadot.Api;
 using Polkadot.DataStructs;
+using Polkadot.Utils;
 
 namespace NftUnity.MethodGroups
 {
     internal class CollectionManagement : ICollectionManagement
     {
-        private const string Module = "Nft";
-        private const string CollectionStorage = "Collection";
-        private const string CreateCollectionMethod = "create_collection";
+        private const string MODULE = "Nft";
+        private const string CREATE_COLLECTION_METHOD = "create_collection";
+        private const string DESTROY_COLLECTION_METHOD = "destroy_collection";
         
-        private readonly Action<Action<IApplication>> _apiCaller;
-        private readonly Func<Address, PublicKey> _publicKeyParser;
-        private readonly Func<IApplication> _applicationGetter;
-        private int? _collectionCreatedSubscriptionId = null;
+        private readonly INftClient _nftClient;
 
-        internal CollectionManagement(Action<Action<IApplication>> apiCaller, Func<Address, PublicKey> publicKeyParser, Func<IApplication> applicationGetter)
+        internal CollectionManagement(INftClient nftClient)
         {
-            _apiCaller = apiCaller;
-            _publicKeyParser = publicKeyParser;
-            _applicationGetter = applicationGetter;
+            _nftClient = nftClient;
         }
         
-        public void CreateCollection(uint customDataSize, Address sender, string privateKey)
+        public string CreateCollection(CreateCollection createCollection, Address sender, string privateKey)
         {
-            _apiCaller(application =>
-            {
-                var key = _publicKeyParser(sender);
-                var param = customDataSize.ToCompactBytes();
-
-                var methodBytes = key.Bytes.Concat(param).ToArray();
-                application.SubmitExtrinsic(
-                    methodBytes, 
-                    Module, 
-                    CreateCollectionMethod, 
-                    sender,
-                    privateKey);
-            });
+            return _nftClient.MakeCallWithReconnect(application => application.SubmitExtrinsicObject(
+                createCollection, 
+                MODULE, 
+                CREATE_COLLECTION_METHOD, 
+                sender,
+                privateKey));
         }
 
-        private event EventHandler<CollectionCreatedEventArgs>? CollectionCreated;
-
-        event EventHandler<CollectionCreatedEventArgs>? ICollectionManagement.CollectionCreated
+        public void ChangeCollectionOwner(uint collectionId, Address newOwner, Address sender, string privateKey)
         {
-            add
-            {
-                if (_collectionCreatedSubscriptionId == null)
-                {
-                    var app = _applicationGetter();
-                    _collectionCreatedSubscriptionId = app.SubscribeStorage(CollectionCreatedKey(app), OnCollectionCreated);
-                }
-                this.CollectionCreated += value;
-                
-            }
-            remove
-            {
-                this.CollectionCreated -= value;
-                var id = _collectionCreatedSubscriptionId;
-                if (CollectionCreated == null && id != null)
-                {
-                    var app = _applicationGetter();
-                    app.UnsubscribeStorage(id.Value);
-                }
-            }
         }
 
-        private void OnCollectionCreated(string obj)
+        public void DestroyCollection(uint collectionId, Address sender, string privateKey)
         {
-            CollectionCreated?.Invoke(this, new CollectionCreatedEventArgs("", ""));
-        }
-
-        private static string CollectionCreatedKey(IApplication app)
-        {
-            return app.GetKeys("", Module, CollectionStorage);
         }
     }
 }

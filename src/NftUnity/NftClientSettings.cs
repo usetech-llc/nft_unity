@@ -1,4 +1,5 @@
-﻿using NftUnity.Logging;
+﻿using System;
+using NftUnity.Logging;
 using Polkadot;
 
 namespace NftUnity
@@ -7,6 +8,11 @@ namespace NftUnity
     {
         private ILogger _logger = new DoNothingLogger();
         public string WsEndpoint { get; set; } = null!;
+        /// <summary>
+        /// If request doesn't complete in specified timeout then <see cref="System.TimeoutException"/> will be thrown.
+        /// Null means no timeout. 
+        /// </summary>
+        public TimeSpan? RequestsTimeout { get; set; } = null;
 
         public ILogger Logger
         {
@@ -18,10 +24,11 @@ namespace NftUnity
         {
         }
 
-        public NftClientSettings(string wsEndpoint, ILogger logger = null)
+        public NftClientSettings(string wsEndpoint, ILogger? logger = null, TimeSpan? requestsTimeout = null)
         {
             WsEndpoint = wsEndpoint;
-            Logger = logger;
+            Logger = logger!;
+            RequestsTimeout = requestsTimeout;
         }
     }
 }

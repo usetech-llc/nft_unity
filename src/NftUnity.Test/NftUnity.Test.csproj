@@ -28,6 +28,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\polkadot_api_dotnet\Polkadot\Polkadot.csproj" />
       <ProjectReference Include="..\NftUnity\NftUnity.csproj" />
     </ItemGroup>
 

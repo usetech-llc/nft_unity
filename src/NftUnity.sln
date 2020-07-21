@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Schnorrkel", "..\polkadot_a
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NftUnity.Test", "NftUnity.Test\NftUnity.Test.csproj", "{A0AAA56D-A0D3-4292-8D93-E6916BCB7707}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Polkadot.BinarySerializer", "..\polkadot_api_dotnet\Polkadot.BinarySerializer\Polkadot.BinarySerializer.csproj", "{AC706B21-38D5-4CFC-BE89-1482C346BC36}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{A0AAA56D-A0D3-4292-8D93-E6916BCB7707}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A0AAA56D-A0D3-4292-8D93-E6916BCB7707}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A0AAA56D-A0D3-4292-8D93-E6916BCB7707}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC706B21-38D5-4CFC-BE89-1482C346BC36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC706B21-38D5-4CFC-BE89-1482C346BC36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC706B21-38D5-4CFC-BE89-1482C346BC36}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC706B21-38D5-4CFC-BE89-1482C346BC36}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
