@@ -1,5 +1,6 @@
 ﻿using System;
 using NftUnity.Models;
+using NftUnity.Models.Calls.Collection;
 using NftUnity.Models.Events;
 using Polkadot.DataStructs;
 
@@ -29,10 +30,10 @@ namespace NftUnity.MethodGroups
         /// <summary>
         /// DANGEROUS: Destroys collection and all NFTs within this collection. Users irrecoverably lose their assets and may lose real money.
         /// </summary>
-        /// <param name="collectionId"></param>
+        /// <param name="destroyCollection"></param>
         /// <param name="sender"></param>
         /// <param name="privateKey"></param>
-        void DestroyCollection(uint collectionId, Address sender, string privateKey);
+        string DestroyCollection(DestroyCollection destroyCollection, Address sender, string privateKey);
 
         event EventHandler<Created> CollectionCreated;
 
@@ -41,6 +42,6 @@ namespace NftUnity.MethodGroups
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Collection GetCollection(ulong id);
+        Collection? GetCollection(ulong id);
     }
 }

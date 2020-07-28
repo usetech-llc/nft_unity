@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using NftUnity.Extensions;
 using NftUnity.Models;
+using NftUnity.Models.Calls.Collection;
 using NftUnity.Models.Events;
 using Polkadot.Api;
 using Polkadot.BinaryContracts.Events;
@@ -47,15 +48,25 @@ namespace NftUnity.MethodGroups
                 privateKey));
         }
 
-        public void DestroyCollection(uint collectionId, Address sender, string privateKey)
+        public string DestroyCollection(DestroyCollection destroyCollection, Address sender, string privateKey)
         {
+            return _nftClient.MakeCallWithReconnect(application => application.SubmitExtrinsicObject(
+                destroyCollection, 
+                MODULE, 
+                DESTROY_COLLECTION_METHOD, 
+                sender,
+                privateKey));
         }
 
         private event EventHandler<Created> CollectionCreated;
-        public Collection GetCollection(ulong id)
+        public Collection? GetCollection(ulong id)
         {
             var application = _nftClient.GetApplication();
             var request = application.GetStorage(id, MODULE, COLLECTION_STORAGE);
+            if (string.IsNullOrEmpty(request))
+            {
+                return null;
+            }
             return application.Serializer.Deserialize<Collection>(request.HexToByteArray());
         }
 

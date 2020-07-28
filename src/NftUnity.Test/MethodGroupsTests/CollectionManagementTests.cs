@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using NftUnity.Models;
+using NftUnity.Models.Calls.Collection;
 using NftUnity.Models.Events;
 using Polkadot.DataStructs;
 using Polkadot.Utils;
@@ -80,33 +80,32 @@ namespace NftUnity.Test.MethodGroupsTests
         [Fact]
         public async Task ChangeOwnerCollectionChangesOwner()
         {
-            var name = Guid.NewGuid().ToString("N");
-            var description = Guid.NewGuid().ToString("N");
-            var prefix = Guid.NewGuid().ToString("N")[..15];
-            var size = 9u;
+            using var client = CreateClient();
+
+            var id = await CreateTestAccount1Collection();
             
-            var collectionCreatedTask = new TaskCompletionSource<Created>();
-            var createCollection = new CreateCollection(name, description, prefix, size);
-            using var blockClient = CreateClient();
-            blockClient.CollectionManagement.CollectionCreated += (sender, @event) =>
-            {
-                if (AddressUtils.GetAddrFromPublicKey(@event.Account).Equals(Configuration.Account1.Address))
-                {
-                    collectionCreatedTask.SetResult(@event);
-                }
-            };
+            var changeCollectionOwner = new ChangeOwner(id, new Address(Configuration.Account2.Address));
 
-            blockClient.CollectionManagement.CreateCollection(createCollection, new Address() {Symbols = Configuration.Account1.Address}, Configuration.Account1.PrivateKey);
+            client.CollectionManagement.ChangeCollectionOwner(changeCollectionOwner, new Address(Configuration.Account1.Address), Configuration.Account1.PrivateKey);
 
-            var created = await collectionCreatedTask.Task;
+            var collection = client.CollectionManagement.GetCollection(id);
             
-            var changeCollectionOwner = new ChangeOwner(created.Id, new Address(Configuration.Account2.Address));
+            Assert.Equal(AddressUtils.GetPublicKeyFromAddr(Configuration.Account1.Address).Bytes, collection!.Owner.Bytes);
+        }
 
-            blockClient.CollectionManagement.ChangeCollectionOwner(changeCollectionOwner, new Address(Configuration.Account1.Address), Configuration.Account1.PrivateKey);
+        [Fact]
+        public async Task DestroyingCollectionMakesItDisappear()
+        {
+            var id = await CreateTestAccount1Collection();
 
-            var collection = blockClient.CollectionManagement.GetCollection(created.Id);
-            
-            Assert.Equal(AddressUtils.GetPublicKeyFromAddr(Configuration.Account1.Address).Bytes, collection.Owner.Bytes);
+            var client = CreateClient();
+            client.CollectionManagement.DestroyCollection(new DestroyCollection(id),
+                new Address(Configuration.Account1.Address), Configuration.Account1.PrivateKey);
+
+            await WaitBlocks(10);
+           
+            var collection = client.CollectionManagement.GetCollection(id);
+            Assert.Null(collection);
         }
     }
 }

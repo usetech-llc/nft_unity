@@ -3,7 +3,7 @@ using System.Text;
 using NftUnity.Converters;
 using Polkadot.BinarySerializer;
 
-namespace NftUnity.Models
+namespace NftUnity.Models.Calls.Collection
 {
     public class CreateCollection
     {
