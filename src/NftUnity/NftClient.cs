@@ -93,20 +93,22 @@ namespace NftUnity
                 return;
             }
 
-            var app = GetApplication();
-            var storageKey = app.GetKeys("System", "Events");
-            _eventsSubscription = app.SubscribeStorage(storageKey, change =>
+            this.MakeCallWithReconnect(app =>
             {
-                if (change == null)
+                var storageKey = app.GetKeys("System", "Events");
+                _eventsSubscription = app.SubscribeStorage(storageKey, change =>
                 {
-                    return;
-                }
+                    if (change == null)
+                    {
+                        return;
+                    }
 
-                var events = GetApplication().Serializer.Deserialize<EventList>(change.HexToByteArray()).Events;
-                foreach (var eventRecord in events)
-                {
-                    NewEvent?.Invoke(this, eventRecord.Event);
-                }
+                    var events = GetApplication().Serializer.Deserialize<EventList>(change.HexToByteArray()).Events;
+                    foreach (var eventRecord in events)
+                    {
+                        NewEvent?.Invoke(this, eventRecord.Event);
+                    }
+                });
             });
         }
 

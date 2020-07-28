@@ -17,6 +17,7 @@ namespace NftUnity.MethodGroups
         private const string CREATE_COLLECTION_METHOD = "create_collection";
         private const string COLLECTION_STORAGE = "Collection";
         private const string DESTROY_COLLECTION_METHOD = "destroy_collection";
+        private const string CHANGE_OWNER_METHOD = "change_collection_owner";
 
         private bool _eventSubscribed = false;
         private readonly INftClient _nftClient;
@@ -41,7 +42,7 @@ namespace NftUnity.MethodGroups
             return _nftClient.MakeCallWithReconnect(application => application.SubmitExtrinsicObject(
                 changeOwner, 
                 MODULE, 
-                CREATE_COLLECTION_METHOD, 
+                CHANGE_OWNER_METHOD, 
                 sender,
                 privateKey));
         }

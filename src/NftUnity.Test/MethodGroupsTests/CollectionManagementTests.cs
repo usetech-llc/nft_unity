@@ -78,16 +78,35 @@ namespace NftUnity.Test.MethodGroupsTests
         }
 
         [Fact]
-        public void ChangeOwnerCollectionChangesSomething()
+        public async Task ChangeOwnerCollectionChangesOwner()
         {
-            var collectionId = 1UL;
-            var changeOwner = new ChangeOwner(collectionId, new Address(Configuration.Account2.Address));
-
-            using var client = CreateClient();
-
-            var changingResult = client.CollectionManagement.ChangeCollectionOwner(changeOwner, new Address(Configuration.Account1.Address), Configuration.Account1.PrivateKey);
+            var name = Guid.NewGuid().ToString("N");
+            var description = Guid.NewGuid().ToString("N");
+            var prefix = Guid.NewGuid().ToString("N")[..15];
+            var size = 9u;
             
-            Assert.NotEmpty(changingResult);
+            var collectionCreatedTask = new TaskCompletionSource<Created>();
+            var createCollection = new CreateCollection(name, description, prefix, size);
+            using var blockClient = CreateClient();
+            blockClient.CollectionManagement.CollectionCreated += (sender, @event) =>
+            {
+                if (AddressUtils.GetAddrFromPublicKey(@event.Account).Equals(Configuration.Account1.Address))
+                {
+                    collectionCreatedTask.SetResult(@event);
+                }
+            };
+
+            blockClient.CollectionManagement.CreateCollection(createCollection, new Address() {Symbols = Configuration.Account1.Address}, Configuration.Account1.PrivateKey);
+
+            var created = await collectionCreatedTask.Task;
+            
+            var changeCollectionOwner = new ChangeOwner(created.Id, new Address(Configuration.Account2.Address));
+
+            blockClient.CollectionManagement.ChangeCollectionOwner(changeCollectionOwner, new Address(Configuration.Account1.Address), Configuration.Account1.PrivateKey);
+
+            var collection = blockClient.CollectionManagement.GetCollection(created.Id);
+            
+            Assert.Equal(AddressUtils.GetPublicKeyFromAddr(Configuration.Account1.Address).Bytes, collection.Owner.Bytes);
         }
     }
 }
