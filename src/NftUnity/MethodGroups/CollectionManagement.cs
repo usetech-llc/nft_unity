@@ -15,6 +15,7 @@ namespace NftUnity.MethodGroups
     {
         private const string MODULE = "Nft";
         private const string CREATE_COLLECTION_METHOD = "create_collection";
+        private const string COLLECTION_STORAGE = "Collection";
         private const string DESTROY_COLLECTION_METHOD = "destroy_collection";
 
         private bool _eventSubscribed = false;
@@ -50,6 +51,12 @@ namespace NftUnity.MethodGroups
         }
 
         private event EventHandler<Created> CollectionCreated;
+        public Collection GetCollection(ulong id)
+        {
+            var application = _nftClient.GetApplication();
+            var request = application.GetStorage(id, MODULE, COLLECTION_STORAGE);
+            return application.Serializer.Deserialize<Collection>(request.HexToByteArray());
+        }
 
         event EventHandler<Created> ICollectionManagement.CollectionCreated
         {

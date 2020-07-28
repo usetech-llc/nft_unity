@@ -35,5 +35,12 @@ namespace NftUnity.MethodGroups
         void DestroyCollection(uint collectionId, Address sender, string privateKey);
 
         event EventHandler<Created> CollectionCreated;
+
+        /// <summary>
+        /// Gets collection by id.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Collection GetCollection(ulong id);
     }
 }

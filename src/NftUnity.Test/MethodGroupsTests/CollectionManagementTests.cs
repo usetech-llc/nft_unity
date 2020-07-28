@@ -46,6 +46,38 @@ namespace NftUnity.Test.MethodGroupsTests
         }
 
         [Fact]
+        public async Task GetCollectionMatchesNewlyCreatedCollection()
+        {
+            var name = Guid.NewGuid().ToString("N");
+            var description = Guid.NewGuid().ToString("N");
+            var prefix = Guid.NewGuid().ToString("N")[..15];
+            var size = 9u;
+            
+            var collectionCreatedTask = new TaskCompletionSource<Created>();
+            var createCollection = new CreateCollection(name, description, prefix, size);
+            using var blockClient = CreateClient();
+            blockClient.CollectionManagement.CollectionCreated += (sender, @event) =>
+            {
+                if (AddressUtils.GetAddrFromPublicKey(@event.Account).Equals(Configuration.Account1.Address))
+                {
+                    collectionCreatedTask.SetResult(@event);
+                }
+            };
+
+            blockClient.CollectionManagement.CreateCollection(createCollection, new Address() {Symbols = Configuration.Account1.Address}, Configuration.Account1.PrivateKey);
+
+            var created = await collectionCreatedTask.Task;
+
+            var collection = blockClient.CollectionManagement.GetCollection(created.Id);
+            
+            Assert.Equal(name, collection.Name);
+            Assert.Equal(description, collection.Description);
+            Assert.Equal(prefix, collection.TokenPrefix);
+            Assert.Equal(size, collection.CustomDataSize);
+            Assert.Equal(AddressUtils.GetPublicKeyFromAddr(Configuration.Account1.Address).Bytes, collection.Owner.Bytes);
+        }
+
+        [Fact]
         public void ChangeOwnerCollectionChangesSomething()
         {
             var collectionId = 1UL;
