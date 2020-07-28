@@ -8,8 +8,7 @@ namespace NftUnity.Extensions
         public static string SubmitExtrinsicObject<T>(this IApplication application, T param, string module, string method,
             Address sender, string privateKey)
         {
-            var serializer = application.CreateSerializer();
-            var methodBytes = serializer.Serialize(param);
+            var methodBytes = application.Serializer.Serialize(param);
 
             return application.SubmitExtrinsic(methodBytes, module, method, sender, privateKey);
         }

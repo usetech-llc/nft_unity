@@ -1,6 +1,9 @@
 ﻿using System;
 using NftUnity.Logging;
+using NftUnity.Models.Events;
 using Polkadot;
+using Polkadot.Api;
+using Polkadot.BinarySerializer;
 
 namespace NftUnity
 {
@@ -13,6 +16,8 @@ namespace NftUnity
         /// Null means no timeout. 
         /// </summary>
         public TimeSpan? RequestsTimeout { get; set; } = null;
+        
+        public SerializerSettings SerializerSettings { get; set; }
 
         public ILogger Logger
         {
@@ -20,15 +25,27 @@ namespace NftUnity
             set => _logger = value ?? new DoNothingLogger();
         }
 
-        public NftClientSettings()
+        public NftClientSettings(SerializerSettings serializerSettings)
         {
+            SerializerSettings = serializerSettings;
         }
 
-        public NftClientSettings(string wsEndpoint, ILogger? logger = null, TimeSpan? requestsTimeout = null)
+        public NftClientSettings(string wsEndpoint, ILogger? logger = null, TimeSpan? requestsTimeout = null, SerializerSettings serializerSettings = null)
         {
             WsEndpoint = wsEndpoint;
+            SerializerSettings = serializerSettings ?? DefaultNftSerializerSettings();
             Logger = logger!;
             RequestsTimeout = requestsTimeout;
+        }
+
+        public static SerializerSettings DefaultNftSerializerSettings()
+        {
+            return Application
+                .DefaultSubstrateSettings()
+                
+                .AddEvent<Created>("Nft", "Created")
+                .AddEvent<ItemCreated>("Nft", "ItemCreated")
+                .AddEvent<ItemDestroyed>("Nft", "ItemDestroyed");
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using System;
 using NftUnity.MethodGroups;
 using Polkadot.Api;
+using Polkadot.BinaryContracts.Events;
+using Polkadot.Data;
 
 namespace NftUnity
 {
@@ -12,5 +14,7 @@ namespace NftUnity
         IApplication GetApplication();
 
         void Connect();
+
+        event EventHandler<IEvent> NewEvent;
     }
 }

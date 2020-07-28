@@ -24,7 +24,7 @@ namespace NftUnity.Extensions
             {
                 return call(nftClient.GetApplication());
             }
-            catch (Exception ex) when (IsDisconnectedException(ex))
+            catch (Exception ex) when (IsDisconnectedException(ex) || ex is TimeoutException)
             {
                 nftClient.Connect();
                 return call(nftClient.GetApplication());

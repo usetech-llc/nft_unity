@@ -3,7 +3,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using NftUnity.Extensions;
 using NftUnity.Models;
+using NftUnity.Models.Events;
 using Polkadot.Api;
+using Polkadot.BinaryContracts.Events;
 using Polkadot.DataStructs;
 using Polkadot.Utils;
 
@@ -14,7 +16,8 @@ namespace NftUnity.MethodGroups
         private const string MODULE = "Nft";
         private const string CREATE_COLLECTION_METHOD = "create_collection";
         private const string DESTROY_COLLECTION_METHOD = "destroy_collection";
-        
+
+        private bool _eventSubscribed = false;
         private readonly INftClient _nftClient;
 
         internal CollectionManagement(INftClient nftClient)
@@ -32,12 +35,50 @@ namespace NftUnity.MethodGroups
                 privateKey));
         }
 
-        public void ChangeCollectionOwner(uint collectionId, Address newOwner, Address sender, string privateKey)
+        public string ChangeCollectionOwner(ChangeOwner changeOwner, Address sender, string privateKey)
         {
+            return _nftClient.MakeCallWithReconnect(application => application.SubmitExtrinsicObject(
+                changeOwner, 
+                MODULE, 
+                CREATE_COLLECTION_METHOD, 
+                sender,
+                privateKey));
         }
 
         public void DestroyCollection(uint collectionId, Address sender, string privateKey)
         {
+        }
+
+        private event EventHandler<Created> CollectionCreated;
+
+        event EventHandler<Created> ICollectionManagement.CollectionCreated
+        {
+            add
+            {
+                if (!_eventSubscribed)
+                {
+                    _eventSubscribed = true;
+                    _nftClient.NewEvent += OnNewEvent;
+                }
+                this.CollectionCreated += value;
+            }
+            remove
+            {
+                this.CollectionCreated -= value;
+                if (CollectionCreated == null)
+                {
+                    _eventSubscribed = false;
+                    _nftClient.NewEvent -= OnNewEvent;
+                }
+            }
+        }
+
+        private void OnNewEvent(object sender, IEvent e)
+        {
+            if (e is Created created)
+            {
+                CollectionCreated?.Invoke(sender, created);
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using NftUnity.Models;
+using NftUnity.Models.Events;
 using Polkadot.DataStructs;
 
 namespace NftUnity.MethodGroups
@@ -20,11 +21,10 @@ namespace NftUnity.MethodGroups
         /// <summary>
         /// Change the owner of the collection.
         /// </summary>
-        /// <param name="collectionId"></param>
-        /// <param name="newOwner"></param>
+        /// <param name="changeOwner"></param>
         /// <param name="sender"></param>
         /// <param name="privateKey"></param>
-        void ChangeCollectionOwner(uint collectionId, Address newOwner, Address sender, string privateKey);
+        string ChangeCollectionOwner(ChangeOwner changeOwner, Address sender, string privateKey);
 
         /// <summary>
         /// DANGEROUS: Destroys collection and all NFTs within this collection. Users irrecoverably lose their assets and may lose real money.
@@ -33,5 +33,7 @@ namespace NftUnity.MethodGroups
         /// <param name="sender"></param>
         /// <param name="privateKey"></param>
         void DestroyCollection(uint collectionId, Address sender, string privateKey);
+
+        event EventHandler<Created> CollectionCreated;
     }
 }

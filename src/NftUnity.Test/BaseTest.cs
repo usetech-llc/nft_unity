@@ -18,7 +18,7 @@ namespace NftUnity.Test
 
         public INftClient CreateClient()
         {
-            return new NFtClient(new NftClientSettings(Configuration.WsEndpoint, new TestOutputLogger(Output), TimeSpan.FromSeconds(30)));
+            return new NftClient(new NftClientSettings(Configuration.WsEndpoint, new TestOutputLogger(Output), TimeSpan.FromSeconds(30)));
         }
     }
 }
