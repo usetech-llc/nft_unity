@@ -35,13 +35,23 @@ namespace NftUnity.MethodGroups
         /// <param name="privateKey"></param>
         string DestroyCollection(DestroyCollection destroyCollection, Address sender, string privateKey);
 
-        event EventHandler<Created> CollectionCreated;
-
         /// <summary>
         /// Gets collection by id.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         Collection? GetCollection(ulong id);
+
+        /// <summary>
+        /// NFT Collection can be controlled by multiple admin addresses (some which can also be servers, for example). Admins can issue and burn NFTs, as well as add and remove other admins, but cannot change NFT or Collection ownership.
+        /// </summary>
+        /// <param name="addCollectionAdmin"></param>
+        /// <returns></returns>
+        string AddCollectionAdmin(AddCollectionAdmin addCollectionAdmin, Address sender, string privateKey);
+
+        AdminList? GetAdminList(ulong collectionId);
+        
+        event EventHandler<Created> CollectionCreated;
+
     }
 }

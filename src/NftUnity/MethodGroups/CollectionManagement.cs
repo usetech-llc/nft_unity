@@ -15,8 +15,10 @@ namespace NftUnity.MethodGroups
         private const string Module = "Nft";
         private const string CreateCollectionMethod = "create_collection";
         private const string CollectionStorage = "Collection";
+        private const string AdminListStorage = "AdminList";
         private const string DestroyCollectionMethod = "destroy_collection";
         private const string ChangeOwnerMethod = "change_collection_owner";
+        private const string AddAdminMethod = "add_collection_admin";
 
         private bool _eventSubscribed = false;
         private readonly INftClient _nftClient;
@@ -54,6 +56,30 @@ namespace NftUnity.MethodGroups
                 DestroyCollectionMethod, 
                 sender,
                 privateKey));
+        }
+
+        public string AddCollectionAdmin(AddCollectionAdmin addCollectionAdmin, Address sender, string privateKey)
+        {
+            return _nftClient.MakeCallWithReconnect(application => application.SubmitExtrinsicObject(
+                addCollectionAdmin, 
+                Module, 
+                AddAdminMethod, 
+                sender,
+                privateKey));
+        }
+
+        public AdminList? GetAdminList(ulong collectionId)
+        {
+            return _nftClient.MakeCallWithReconnect(application =>
+            {
+                var request = application.GetStorage(collectionId, Module, AdminListStorage);
+                if (string.IsNullOrEmpty(request))
+                {
+                    return null;
+                }
+                
+                return application.Serializer.Deserialize<AdminList>(request.HexToByteArray());
+            });
         }
 
         private event EventHandler<Created>? CollectionCreated;

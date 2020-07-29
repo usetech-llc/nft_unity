@@ -98,7 +98,7 @@ namespace NftUnity.Test.MethodGroupsTests
         {
             var id = await CreateTestAccount1Collection();
 
-            var client = CreateClient();
+            using var client = CreateClient();
             client.CollectionManagement.DestroyCollection(new DestroyCollection(id),
                 new Address(Configuration.Account1.Address), Configuration.Account1.PrivateKey);
 
@@ -106,6 +106,31 @@ namespace NftUnity.Test.MethodGroupsTests
            
             var collection = client.CollectionManagement.GetCollection(id);
             Assert.Null(collection);
+        }
+
+        [Fact]
+        public async Task AddCollectionAdminAddsAccountToAdminList()
+        {
+            var id = await CreateTestAccount1Collection();
+            
+            var account2PublicKey = AddressUtils.GetPublicKeyFromAddr(Configuration.Account2.Address).Bytes;
+            
+            using var client = CreateClient();
+
+            var adminList = client.CollectionManagement.GetAdminList(id);
+            if (adminList != null)
+            {
+                Assert.All(adminList.Admins, pk => Assert.NotEqual(account2PublicKey, pk.Bytes));
+            }
+
+            client.CollectionManagement.AddCollectionAdmin(
+                new AddCollectionAdmin(id, new Address(Configuration.Account2.Address)),
+                new Address(Configuration.Account1.Address), Configuration.Account1.PrivateKey);
+
+            await WaitBlocks(2);
+
+            var adminListAfter = client.CollectionManagement.GetAdminList(id);
+            Assert.Contains(adminListAfter!.Admins, pk => pk.Bytes.ToHexString().Equals(account2PublicKey.ToHexString()));
         }
     }
 }
