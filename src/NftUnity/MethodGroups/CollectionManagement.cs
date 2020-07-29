@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
 using NftUnity.Extensions;
 using NftUnity.Models;
 using NftUnity.Models.Calls.Collection;
 using NftUnity.Models.Events;
-using Polkadot.Api;
-using Polkadot.BinaryContracts.Events;
+using Polkadot.BinarySerializer;
+using Polkadot.BinarySerializer.Extensions;
 using Polkadot.DataStructs;
 using Polkadot.Utils;
 
@@ -14,11 +12,11 @@ namespace NftUnity.MethodGroups
 {
     internal class CollectionManagement : ICollectionManagement
     {
-        private const string MODULE = "Nft";
-        private const string CREATE_COLLECTION_METHOD = "create_collection";
-        private const string COLLECTION_STORAGE = "Collection";
-        private const string DESTROY_COLLECTION_METHOD = "destroy_collection";
-        private const string CHANGE_OWNER_METHOD = "change_collection_owner";
+        private const string Module = "Nft";
+        private const string CreateCollectionMethod = "create_collection";
+        private const string CollectionStorage = "Collection";
+        private const string DestroyCollectionMethod = "destroy_collection";
+        private const string ChangeOwnerMethod = "change_collection_owner";
 
         private bool _eventSubscribed = false;
         private readonly INftClient _nftClient;
@@ -32,8 +30,8 @@ namespace NftUnity.MethodGroups
         {
             return _nftClient.MakeCallWithReconnect(application => application.SubmitExtrinsicObject(
                 createCollection, 
-                MODULE, 
-                CREATE_COLLECTION_METHOD, 
+                Module, 
+                CreateCollectionMethod, 
                 sender,
                 privateKey));
         }
@@ -42,8 +40,8 @@ namespace NftUnity.MethodGroups
         {
             return _nftClient.MakeCallWithReconnect(application => application.SubmitExtrinsicObject(
                 changeOwner, 
-                MODULE, 
-                CHANGE_OWNER_METHOD, 
+                Module, 
+                ChangeOwnerMethod, 
                 sender,
                 privateKey));
         }
@@ -52,22 +50,25 @@ namespace NftUnity.MethodGroups
         {
             return _nftClient.MakeCallWithReconnect(application => application.SubmitExtrinsicObject(
                 destroyCollection, 
-                MODULE, 
-                DESTROY_COLLECTION_METHOD, 
+                Module, 
+                DestroyCollectionMethod, 
                 sender,
                 privateKey));
         }
 
-        private event EventHandler<Created> CollectionCreated;
+        private event EventHandler<Created>? CollectionCreated;
         public Collection? GetCollection(ulong id)
         {
-            var application = _nftClient.GetApplication();
-            var request = application.GetStorage(id, MODULE, COLLECTION_STORAGE);
-            if (string.IsNullOrEmpty(request))
+            return _nftClient.MakeCallWithReconnect(application =>
             {
-                return null;
-            }
-            return application.Serializer.Deserialize<Collection>(request.HexToByteArray());
+                var request = application.GetStorage(id, Module, CollectionStorage);
+                if (string.IsNullOrEmpty(request))
+                {
+                    return null;
+                }
+
+                return application.Serializer.DeserializeAssertReadAll<Collection>(request.HexToByteArray());
+            });
         }
 
         event EventHandler<Created> ICollectionManagement.CollectionCreated

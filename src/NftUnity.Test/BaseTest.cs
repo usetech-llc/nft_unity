@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using NftUnity.Extensions;
 using NftUnity.Models.Calls.Collection;
+using NftUnity.Models.Calls.Item;
 using NftUnity.Models.Events;
 using Polkadot;
 using Polkadot.DataStructs;
@@ -33,7 +34,7 @@ namespace NftUnity.Test
             var name = Guid.NewGuid().ToString("N");
             var description = Guid.NewGuid().ToString("N");
             var prefix = Guid.NewGuid().ToString("N")[..15];
-            var size = 9u;
+            var size = 256u;
             
             var collectionCreatedTask = new TaskCompletionSource<Created>();
             var createCollection = new CreateCollection(name, description, prefix, size);
@@ -48,8 +49,29 @@ namespace NftUnity.Test
 
             blockClient.CollectionManagement.CreateCollection(createCollection, new Address() {Symbols = Configuration.Account1.Address}, Configuration.Account1.PrivateKey);
 
-            var created = await collectionCreatedTask.Task;
+            var created = await collectionCreatedTask.Task.WithTimeout(TimeSpan.FromSeconds(30));
             return created.Id;
+        }
+
+        public async Task<ItemKey> CreateTestAccount1Item()
+        {
+            var collectionId = await CreateTestAccount1Collection();
+            
+            var keyTask = new TaskCompletionSource<ItemKey>();
+
+            using var client = CreateClient();
+            client.ItemManagement.ItemCreated += (sender, created) =>
+            {
+                if (created.Key.CollectionId == collectionId)
+                {
+                    keyTask.SetResult(created.Key);
+                }
+            };
+
+            client.ItemManagement.CreateItem(new CreateItem(collectionId, Guid.NewGuid().ToByteArray()),
+                new Address(Configuration.Account1.Address), Configuration.Account1.PrivateKey);
+            
+            return await keyTask.Task;
         }
 
         public async Task WaitBlocks(int blocksCount)

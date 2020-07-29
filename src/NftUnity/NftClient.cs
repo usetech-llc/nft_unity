@@ -3,19 +3,21 @@ using NftUnity.Extensions;
 using NftUnity.MethodGroups;
 using Polkadot.Api;
 using Polkadot.BinaryContracts.Events;
-using Polkadot.Data;
+using Polkadot.BinarySerializer;
+using Polkadot.BinarySerializer.Extensions;
 using Polkadot.Utils;
 
 namespace NftUnity
 {
     public class NftClient : INftClient
     {
-        public NftClientSettings Settings { get; } = null!;
         private IApplication? _application = null;
         private bool _connectWasCalled = false;
         private string? _eventsSubscription = null;
 
         public ICollectionManagement CollectionManagement { get; } = null!;
+        public IItemManagement ItemManagement { get; } = null!;
+        public NftClientSettings Settings { get; } = null!;
 
         private NftClient()
         {
@@ -32,6 +34,7 @@ namespace NftUnity
             _application = new Application(settings.Logger, jsonRpc, settings.SerializerSettings);
             
             CollectionManagement = new CollectionManagement(this);
+            ItemManagement = new ItemManagement(this);
         }
 
         public IApplication GetApplication()
@@ -57,6 +60,7 @@ namespace NftUnity
         }
 
         private event EventHandler<IEvent>? NewEvent;
+        public event EventHandler<Exception>? OnError;
 
         event EventHandler<IEvent> INftClient.NewEvent
         {
@@ -103,10 +107,20 @@ namespace NftUnity
                         return;
                     }
 
-                    var events = GetApplication().Serializer.Deserialize<EventList>(change.HexToByteArray()).Events;
-                    foreach (var eventRecord in events)
+                    try
                     {
-                        NewEvent?.Invoke(this, eventRecord.Event);
+                        var events = GetApplication().Serializer
+                            .DeserializeAssertReadAll<EventList>(change.HexToByteArray()).Events;
+                        foreach (var eventRecord in events)
+                        {
+                            NewEvent?.Invoke(this, eventRecord.Event);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Settings.Logger.Error($"Failed to deserialize events: {ex}");
+                        OnError?.Invoke(this, ex);
+                        throw;
                     }
                 });
             });

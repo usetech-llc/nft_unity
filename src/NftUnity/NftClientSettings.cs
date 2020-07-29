@@ -30,7 +30,7 @@ namespace NftUnity
             SerializerSettings = serializerSettings;
         }
 
-        public NftClientSettings(string wsEndpoint, ILogger? logger = null, TimeSpan? requestsTimeout = null, SerializerSettings serializerSettings = null)
+        public NftClientSettings(string wsEndpoint, ILogger? logger = null, TimeSpan? requestsTimeout = null, SerializerSettings? serializerSettings = null)
         {
             WsEndpoint = wsEndpoint;
             SerializerSettings = serializerSettings ?? DefaultNftSerializerSettings();

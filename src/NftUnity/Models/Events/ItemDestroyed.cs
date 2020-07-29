@@ -1,23 +1,20 @@
-﻿using Polkadot.BinarySerializer;
+﻿using NftUnity.Models.Calls.Item;
+using Polkadot.BinarySerializer;
 
 namespace NftUnity.Models.Events
 {
-    public class ItemDestroyed
+    public class ItemDestroyed : IEvent
     {
         [Serialize(0)]
-        public ulong CollectionId;
-
-        [Serialize((1))]
-        public ulong ItemId;
+        public ItemKey Key = null!;
 
         public ItemDestroyed()
         {
         }
 
-        public ItemDestroyed(ulong collectionId, ulong itemId)
+        public ItemDestroyed(ItemKey key)
         {
-            CollectionId = collectionId;
-            ItemId = itemId;
+            Key = key;
         }
     }
 }

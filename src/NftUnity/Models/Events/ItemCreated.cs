@@ -1,4 +1,5 @@
-﻿using Polkadot.BinaryContracts.Events;
+﻿using NftUnity.Models.Calls.Item;
+using Polkadot.BinaryContracts.Events;
 using Polkadot.BinarySerializer;
 
 namespace NftUnity.Models.Events
@@ -6,19 +7,15 @@ namespace NftUnity.Models.Events
     public class ItemCreated : IEvent
     {
         [Serialize(0)]
-        public ulong CollectionId;
-
-        [Serialize(1)]
-        public ulong ItemId;
+        public ItemKey Key = null!;
 
         public ItemCreated()
         {
         }
 
-        public ItemCreated(ulong collectionId, ulong itemId)
+        public ItemCreated(ItemKey key)
         {
-            CollectionId = collectionId;
-            ItemId = itemId;
+            Key = key;
         }
     }
 }

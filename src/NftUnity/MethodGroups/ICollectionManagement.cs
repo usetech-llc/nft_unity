@@ -7,7 +7,7 @@ using Polkadot.DataStructs;
 namespace NftUnity.MethodGroups
 {
     /// <summary>
-    /// Group of operations for managing collections.
+    /// Operations group to manage collections.
     /// </summary>
     public interface ICollectionManagement
     {

@@ -16,7 +16,7 @@ namespace NftUnity.Test.MethodGroupsTests
         }
         
         [Fact]
-        public async Task CreateCollectionEmmitsEvent()
+        public async Task CreateCollectionEmitsEvent()
         {
             var collectionName = "1111";
             var collectionDescription = "1111";
@@ -70,7 +70,7 @@ namespace NftUnity.Test.MethodGroupsTests
 
             var collection = blockClient.CollectionManagement.GetCollection(created.Id);
             
-            Assert.Equal(name, collection.Name);
+            Assert.Equal(name, collection!.Name);
             Assert.Equal(description, collection.Description);
             Assert.Equal(prefix, collection.TokenPrefix);
             Assert.Equal(size, collection.CustomDataSize);

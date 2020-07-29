@@ -6,12 +6,12 @@ namespace NftUnity.Models.Calls.Collection
 {
     public class ChangeOwner
     {
-        [Serialize(0)]
-        public ulong CollectionId { get; set; }
+        [Serialize(0)] 
+        public ulong CollectionId;
 
-        [Serialize(1)]
+        [Serialize(1)] 
         [Converter(ConverterType = typeof(AddressConverter))]
-        public Address NewOwner { get; set; }
+        public Address NewOwner = null!;
 
         public ChangeOwner()
         {

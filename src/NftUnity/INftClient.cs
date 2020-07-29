@@ -1,14 +1,14 @@
 ﻿using System;
 using NftUnity.MethodGroups;
 using Polkadot.Api;
-using Polkadot.BinaryContracts.Events;
-using Polkadot.Data;
+using Polkadot.BinarySerializer;
 
 namespace NftUnity
 {
     public interface INftClient : IDisposable
     {
         ICollectionManagement CollectionManagement { get; }
+        IItemManagement ItemManagement { get; }
         NftClientSettings Settings { get; }  
 
         IApplication GetApplication();
@@ -16,5 +16,6 @@ namespace NftUnity
         void Connect();
 
         event EventHandler<IEvent> NewEvent;
+        event EventHandler<Exception> OnError;
     }
 }

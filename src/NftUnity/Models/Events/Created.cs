@@ -10,7 +10,7 @@ namespace NftUnity.Models.Events
         public ulong Id;
 
         [Serialize(1)]
-        public PublicKey Account;
+        public PublicKey Account = null!;
 
         public Created()
         {
