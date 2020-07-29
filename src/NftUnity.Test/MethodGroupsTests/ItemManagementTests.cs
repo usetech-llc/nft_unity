@@ -16,9 +16,12 @@ namespace NftUnity.Test.MethodGroupsTests
         {
         }
         
-        [Fact(Skip = "Need to figure out how to make correct ItemList storage request.")]
+        [Fact]
         public async Task CreatedItemMatchesGetItem()
         {
+            var bytes = new byte[] {15, 97, 136, 0, 76, 187, 168, 28, 239, 85, 170, 23, 77, 81, 248, 159,};
+            var str = bytes.ToHexString();
+                
             var collectionId = await CreateTestAccount1Collection();
             var properties = Guid.NewGuid().ToByteArray();
             

@@ -41,7 +41,7 @@ namespace NftUnity.MethodGroups
         {
             return _nftClient.MakeCallWithReconnect(application =>
             {
-                var request = application.GetStorage(key, Module, ItemStorage);
+                var request = application.GetStorage(DoubleMapKey.Create(key), Module, ItemStorage);
                 if (string.IsNullOrEmpty(request))
                 {
                     return null;
