@@ -182,5 +182,16 @@ namespace NftUnity.Test.MethodGroupsTests
             var balance = client.CollectionManagement.BalanceOf(new GetBalanceOf(itemKey.CollectionId, new Address(Configuration.Account2.Address)));
             Assert.Equal(0UL, balance ?? 0);
         }
+
+        [Fact]
+        public async Task NextIdGreaterOrEqualLastCreatedCollectionId()
+        {
+            var id = await CreateTestAccount1Collection();
+
+            using var client = CreateClient();
+            var nextId = client.CollectionManagement.NextCollectionId();
+            
+            Assert.True(nextId >= id);
+        }
     }
 }

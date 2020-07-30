@@ -68,6 +68,8 @@ namespace NftUnity.MethodGroups
         ulong? BalanceOf(GetBalanceOf getBalanceOf);
 
         AdminList? GetAdminList(ulong collectionId);
+
+        ulong? NextCollectionId();
         
         event EventHandler<Created> CollectionCreated;
 

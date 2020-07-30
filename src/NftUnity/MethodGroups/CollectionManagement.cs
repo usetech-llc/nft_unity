@@ -3,6 +3,7 @@ using NftUnity.Extensions;
 using NftUnity.Models;
 using NftUnity.Models.Calls.Collection;
 using NftUnity.Models.Events;
+using Polkadot.BinaryContracts;
 using Polkadot.BinarySerializer;
 using Polkadot.BinarySerializer.Extensions;
 using Polkadot.DataStructs;
@@ -23,6 +24,7 @@ namespace NftUnity.MethodGroups
         private const string CollectionStorage = "Collection";
         private const string AdminListStorage = "AdminList";
         private const string BalanceStorage = "Balance";
+        private const string NextIdStorage = "NextCollectionID";
 
         private bool _eventSubscribed = false;
         private readonly INftClient _nftClient;
@@ -90,6 +92,11 @@ namespace NftUnity.MethodGroups
         public AdminList? GetAdminList(ulong collectionId)
         {
             return _nftClient.MakeCallWithReconnect(application => application.GetStorageObject<AdminList, ulong>(collectionId, Module, AdminListStorage));
+        }
+
+        public ulong? NextCollectionId()
+        {
+            return _nftClient.MakeCallWithReconnect(application => application.GetStorageObject<ulong?, Empty>(Empty.Instance, Module, NextIdStorage));
         }
 
         private event EventHandler<Created>? CollectionCreated;
