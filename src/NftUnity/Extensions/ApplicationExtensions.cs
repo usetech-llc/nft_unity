@@ -1,5 +1,9 @@
-﻿using Polkadot.Api;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using Polkadot.Api;
 using Polkadot.DataStructs;
+using Polkadot.Utils;
 
 namespace NftUnity.Extensions
 {
@@ -11,6 +15,25 @@ namespace NftUnity.Extensions
             var methodBytes = application.Serializer.Serialize(param);
 
             return application.SubmitExtrinsic(methodBytes, module, method, sender, privateKey);
+        }
+
+        [return: MaybeNull]
+        public static TStorageItem GetStorageObject<TStorageItem, TParam>(this IApplication application, TParam param,
+            string module, string storageName)
+        {
+            var request = application.GetStorage(param, module, storageName);
+            if (string.IsNullOrEmpty(request))
+            {
+                return default;
+            }
+
+            var nullableType = Nullable.GetUnderlyingType(typeof(TStorageItem));
+            if (nullableType != null)
+            {
+                using var ms = new MemoryStream(request.HexToByteArray());
+                return (TStorageItem) application.Serializer.Deserialize(nullableType, ms);
+            }
+            return application.Serializer.Deserialize<TStorageItem>(request.HexToByteArray());
         }
     }
 }

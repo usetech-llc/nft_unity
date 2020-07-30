@@ -17,8 +17,10 @@ namespace NftUnity.MethodGroups
         private const string CreateItemMethod = "create_item";
         private const string BurnItemMethod = "burn_item";
         private const string TransferMethod = "transfer";
+        private const string ApproveMethod = "approve";
         
         private const string ItemStorage = "ItemList";
+        private const string ApprovedStorage = "ApprovedList";
 
         private readonly INftClient _nftClient;
         private bool _eventsSubscribed = false;
@@ -46,18 +48,21 @@ namespace NftUnity.MethodGroups
                 application.SubmitExtrinsicObject(transfer, Module, TransferMethod, sender, privateKey));
         }
 
-        public Item? GetItem(ItemKey key)
+        public string Approve(Approve approve, Address sender, string privateKey)
         {
             return _nftClient.MakeCallWithReconnect(application =>
-            {
-                var request = application.GetStorage(DoubleMapKey.Create(key), Module, ItemStorage);
-                if (string.IsNullOrEmpty(request))
-                {
-                    return null;
-                }
+                application.SubmitExtrinsicObject(approve, Module, ApproveMethod, sender, privateKey));
+        }
 
-                return application.Serializer.DeserializeAssertReadAll<Item>(request.HexToByteArray());
-            });
+        public Item? GetItem(ItemKey key)
+        {
+            return _nftClient.MakeCallWithReconnect(application => application.GetStorageObject<Item, DoubleMapKey<ItemKey>>(DoubleMapKey.Create(key), Module, ItemStorage));
+        }
+
+        public ApprovedList? GetApproved(ItemKey key)
+        {
+            return _nftClient.MakeCallWithReconnect(application => 
+                application.GetStorageObject<ApprovedList, DoubleMapKey<ItemKey>>(DoubleMapKey.Create(key), Module, ApprovedStorage));
         }
 
         private event EventHandler<ItemCreated>? ItemCreated = null;

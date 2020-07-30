@@ -84,45 +84,18 @@ namespace NftUnity.MethodGroups
 
         public ulong? BalanceOf(GetBalanceOf getBalanceOf)
         {
-            return _nftClient.MakeCallWithReconnect(application =>
-            {
-                var request = application.GetStorage(DoubleMapKey.Create(getBalanceOf), Module, BalanceStorage);
-                if (string.IsNullOrEmpty(request))
-                {
-                    return (ulong?)null;
-                }
-
-                return application.Serializer.DeserializeAssertReadAll<ulong>(request.HexToByteArray());
-            });
+            return _nftClient.MakeCallWithReconnect(application => application.GetStorageObject<ulong?, DoubleMapKey<GetBalanceOf>>(DoubleMapKey.Create(getBalanceOf), Module, BalanceStorage));
         }
 
         public AdminList? GetAdminList(ulong collectionId)
         {
-            return _nftClient.MakeCallWithReconnect(application =>
-            {
-                var request = application.GetStorage(collectionId, Module, AdminListStorage);
-                if (string.IsNullOrEmpty(request))
-                {
-                    return null;
-                }
-                
-                return application.Serializer.Deserialize<AdminList>(request.HexToByteArray());
-            });
+            return _nftClient.MakeCallWithReconnect(application => application.GetStorageObject<AdminList, ulong>(collectionId, Module, AdminListStorage));
         }
 
         private event EventHandler<Created>? CollectionCreated;
         public Collection? GetCollection(ulong id)
         {
-            return _nftClient.MakeCallWithReconnect(application =>
-            {
-                var request = application.GetStorage(id, Module, CollectionStorage);
-                if (string.IsNullOrEmpty(request))
-                {
-                    return null;
-                }
-
-                return application.Serializer.DeserializeAssertReadAll<Collection>(request.HexToByteArray());
-            });
+            return _nftClient.MakeCallWithReconnect(application => application.GetStorageObject<Collection, ulong>(id, Module, CollectionStorage));
         }
 
         event EventHandler<Created> ICollectionManagement.CollectionCreated

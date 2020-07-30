@@ -83,5 +83,27 @@ namespace NftUnity.Test.MethodGroupsTests
             var item = client.ItemManagement.GetItem(key);
             Assert.Equal(AddressUtils.GetPublicKeyFromAddr(Configuration.Account2.Address).Bytes, item?.Owner.Bytes);
         }
+
+        [Fact]
+        public async Task ApproveAddsAccountToApprovedList()
+        {
+            var key = await CreateTestAccount1Item();
+
+            using var client = CreateClient();
+            var publicKey2 = AddressUtils.GetPublicKeyFromAddr(Configuration.Account2.Address);
+            var approveListBefore = client.ItemManagement.GetApproved(key);
+            if (approveListBefore != null)
+            {
+                Assert.DoesNotContain(approveListBefore!.ApprovedAccounts, a => a.Bytes.ToHexString().Equals(publicKey2.Bytes.ToHexString()));
+            }
+
+            client.ItemManagement.Approve(new Approve(new Address(Configuration.Account2.Address), key),
+                new Address(Configuration.Account1.Address), Configuration.Account1.PrivateKey);
+
+            await WaitBlocks(2);
+
+            var approveList = client.ItemManagement.GetApproved(key);
+            Assert.Contains(approveList!.ApprovedAccounts, a => a.Bytes.ToHexString().Equals(publicKey2.Bytes.ToHexString()));
+        }
     }
 }

@@ -38,7 +38,23 @@ namespace NftUnity.MethodGroups
         /// <returns></returns>
         string Transfer(Transfer transfer, Address sender, string privateKey);
 
+        /// <summary>
+        /// Set, change, or remove approved address to transfer the ownership of the NFT.
+        /// </summary>
+        /// <param name="approve"></param>
+        /// <param name="sender"></param>
+        /// <param name="privateKey"></param>
+        /// <returns></returns>
+        string Approve(Approve approve, Address sender, string privateKey);
+
         Item? GetItem(ItemKey key);
+
+        /// <summary>
+        /// Get the approved addresses for a single NFT.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        ApprovedList? GetApproved(ItemKey key);
 
         event EventHandler<ItemCreated> ItemCreated;
         event EventHandler<ItemDestroyed> ItemDestroyed;
