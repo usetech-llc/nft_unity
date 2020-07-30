@@ -19,6 +19,7 @@ namespace NftUnity.MethodGroups
         private const string DestroyCollectionMethod = "destroy_collection";
         private const string ChangeOwnerMethod = "change_collection_owner";
         private const string AddAdminMethod = "add_collection_admin";
+        private const string RemoveAdminMethod = "remove_collection_admin";
 
         private bool _eventSubscribed = false;
         private readonly INftClient _nftClient;
@@ -64,6 +65,16 @@ namespace NftUnity.MethodGroups
                 addCollectionAdmin, 
                 Module, 
                 AddAdminMethod, 
+                sender,
+                privateKey));
+        }
+
+        public string RemoveCollectionAdmin(RemoveCollectionAdmin removeCollectionAdmin, Address sender, string privateKey)
+        {
+            return _nftClient.MakeCallWithReconnect(application => application.SubmitExtrinsicObject(
+                removeCollectionAdmin, 
+                Module, 
+                RemoveAdminMethod, 
                 sender,
                 privateKey));
         }

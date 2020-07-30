@@ -120,7 +120,7 @@ namespace NftUnity.Test.MethodGroupsTests
             var adminList = client.CollectionManagement.GetAdminList(id);
             if (adminList != null)
             {
-                Assert.All(adminList.Admins, pk => Assert.NotEqual(account2PublicKey, pk.Bytes));
+                Assert.DoesNotContain(adminList.Admins, pk => account2PublicKey == pk.Bytes);
             }
 
             client.CollectionManagement.AddCollectionAdmin(
@@ -131,6 +131,36 @@ namespace NftUnity.Test.MethodGroupsTests
 
             var adminListAfter = client.CollectionManagement.GetAdminList(id);
             Assert.Contains(adminListAfter!.Admins, pk => pk.Bytes.ToHexString().Equals(account2PublicKey.ToHexString()));
+        }
+
+        [Fact]
+        public async Task RemoveCollectionAdminRemovesAdminFromList()
+        {
+            var id = await CreateTestAccount1Collection();
+            
+            var account2PublicKey = AddressUtils.GetPublicKeyFromAddr(Configuration.Account2.Address).Bytes;
+            
+            using var client = CreateClient();
+
+            client.CollectionManagement.AddCollectionAdmin(
+                new AddCollectionAdmin(id, new Address(Configuration.Account2.Address)),
+                new Address(Configuration.Account1.Address), Configuration.Account1.PrivateKey);
+
+            await WaitBlocks(2);
+
+            var adminList = client.CollectionManagement.GetAdminList(id);
+            Assert.Contains(adminList!.Admins, pk => pk.Bytes.ToHexString().Equals(account2PublicKey.ToHexString()));
+
+            client.CollectionManagement.RemoveCollectionAdmin(
+                new RemoveCollectionAdmin(id, new Address(Configuration.Account2.Address)),
+                new Address(Configuration.Account1.Address), Configuration.Account1.PrivateKey);
+
+            await WaitBlocks(2);
+            var adminListAfter = client.CollectionManagement.GetAdminList(id);
+            if (adminListAfter != null)
+            {
+                Assert.DoesNotContain(adminListAfter.Admins, pk => account2PublicKey == pk.Bytes);
+            }
         }
     }
 }

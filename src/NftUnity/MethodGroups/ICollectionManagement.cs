@@ -48,6 +48,15 @@ namespace NftUnity.MethodGroups
         /// <param name="addCollectionAdmin"></param>
         /// <returns></returns>
         string AddCollectionAdmin(AddCollectionAdmin addCollectionAdmin, Address sender, string privateKey);
+        
+        /// <summary>
+        /// Remove admin address of the Collection. An admin address can remove itself. List of admins may become empty, in which case only Collection Owner will be able to add an Admin.
+        /// </summary>
+        /// <param name="removeCollectionAdmin"></param>
+        /// <param name="sender"></param>
+        /// <param name="privateKey"></param>
+        /// <returns></returns>
+        string RemoveCollectionAdmin(RemoveCollectionAdmin removeCollectionAdmin, Address sender, string privateKey);
 
         AdminList? GetAdminList(ulong collectionId);
         
