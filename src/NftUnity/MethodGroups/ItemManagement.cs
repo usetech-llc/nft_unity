@@ -67,6 +67,11 @@ namespace NftUnity.MethodGroups
                 application.GetStorageObject<ApprovedList, DoubleMapKey<ItemKey>>(DoubleMapKey.Create(key), Module, ApprovedStorage));
         }
 
+        public PublicKey? GetOwner(ItemKey key)
+        {
+            return GetItem(key)?.Owner;
+        }
+
         public ulong? NextId(ulong collectionId)
         {
             return _nftClient.MakeCallWithReconnect(application =>

@@ -56,7 +56,13 @@ namespace NftUnity.MethodGroups
         /// <returns></returns>
         ApprovedList? GetApproved(ItemKey key);
 
-        ulong? NextId(ulong collectionId);
+        /// <summary>
+        /// Non-Fungible Mode: Return the address of the NFT owner. 
+        /// Fungible and Re-Fungible Mode: Not supported, returns the default address.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        PublicKey? GetOwner(ItemKey key);
 
         event EventHandler<ItemCreated> ItemCreated;
         event EventHandler<ItemDestroyed> ItemDestroyed;

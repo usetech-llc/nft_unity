@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using NftUnity.MethodGroups;
 using NftUnity.Models.Calls.Collection;
 using NftUnity.Models.Calls.Item;
 using NftUnity.Models.Events;
@@ -106,15 +107,26 @@ namespace NftUnity.Test.MethodGroupsTests
             Assert.Contains(approveList!.ApprovedAccounts, a => a.Bytes.ToHexString().Equals(publicKey2.Bytes.ToHexString()));
         }
 
-        [Fact]
+        [Fact(Skip = "Not part of api")]
         public async Task NextItemIdGreaterOrEqualToLastCreatedItemId()
         {
             var key = await CreateTestAccount1Item();
 
             using var client = CreateClient();
-            var nextId = client.ItemManagement.NextId(key.CollectionId);
+            var nextId = ((ItemManagement)client.ItemManagement).NextId(key.CollectionId);
             
             Assert.True(nextId >= key.ItemId);
+        }
+
+        [Fact]
+        public async Task GetOwnerReturnsItCreatorAfterCreation()
+        {
+            var key = await CreateTestAccount1Item();
+
+            using var client = CreateClient();
+            var owner = client.ItemManagement.GetOwner(key);
+            
+            Assert.Equal(AddressUtils.GetPublicKeyFromAddr(Configuration.Account1.Address).Bytes, owner!.Bytes);
         }
     }
 }
