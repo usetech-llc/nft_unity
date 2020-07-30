@@ -68,5 +68,20 @@ namespace NftUnity.Test.MethodGroupsTests
             
             Assert.NotNull(destroyedResult);
         }
+
+        [Fact]
+        public async Task TransferChangesOwner()
+        {
+            var key = await CreateTestAccount1Item();
+
+            using var client = CreateClient();
+            client.ItemManagement.Transfer(new Transfer(key, new Address(Configuration.Account2.Address)),
+                new Address(Configuration.Account1.Address), Configuration.Account1.PrivateKey);
+
+            await WaitBlocks(2);
+
+            var item = client.ItemManagement.GetItem(key);
+            Assert.Equal(AddressUtils.GetPublicKeyFromAddr(Configuration.Account2.Address).Bytes, item?.Owner.Bytes);
+        }
     }
 }

@@ -13,8 +13,11 @@ namespace NftUnity.MethodGroups
     public class ItemManagement : IItemManagement
     {
         private const string Module = "Nft";
+        
         private const string CreateItemMethod = "create_item";
         private const string BurnItemMethod = "burn_item";
+        private const string TransferMethod = "transfer";
+        
         private const string ItemStorage = "ItemList";
 
         private readonly INftClient _nftClient;
@@ -35,6 +38,12 @@ namespace NftUnity.MethodGroups
         {
             return _nftClient.MakeCallWithReconnect(application =>
                 application.SubmitExtrinsicObject(key, Module, BurnItemMethod, sender, privateKey));
+        }
+
+        public string Transfer(Transfer transfer, Address sender, string privateKey)
+        {
+            return _nftClient.MakeCallWithReconnect(application =>
+                application.SubmitExtrinsicObject(transfer, Module, TransferMethod, sender, privateKey));
         }
 
         public Item? GetItem(ItemKey key)

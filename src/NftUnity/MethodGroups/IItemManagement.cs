@@ -29,6 +29,15 @@ namespace NftUnity.MethodGroups
         /// <returns></returns>
         string BurnItem(ItemKey key, Address sender, string privateKey);
 
+        /// <summary>
+        /// Change ownership of the token.
+        /// </summary>
+        /// <param name="transfer"></param>
+        /// <param name="sender"></param>
+        /// <param name="privateKey"></param>
+        /// <returns></returns>
+        string Transfer(Transfer transfer, Address sender, string privateKey);
+
         Item? GetItem(ItemKey key);
 
         event EventHandler<ItemCreated> ItemCreated;
