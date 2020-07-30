@@ -10,7 +10,7 @@ namespace NftUnity.Models.Calls.Collection
         public ulong CollectionId;
 
         [Serialize(1)] 
-        [Converter(ConverterType = typeof(AddressConverter))]
+        [AddressConverter]
         public Address NewOwner = null!;
 
         public ChangeOwner()

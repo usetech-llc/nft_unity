@@ -13,13 +13,16 @@ namespace NftUnity.MethodGroups
     internal class CollectionManagement : ICollectionManagement
     {
         private const string Module = "Nft";
+        
         private const string CreateCollectionMethod = "create_collection";
-        private const string CollectionStorage = "Collection";
-        private const string AdminListStorage = "AdminList";
         private const string DestroyCollectionMethod = "destroy_collection";
         private const string ChangeOwnerMethod = "change_collection_owner";
         private const string AddAdminMethod = "add_collection_admin";
         private const string RemoveAdminMethod = "remove_collection_admin";
+
+        private const string CollectionStorage = "Collection";
+        private const string AdminListStorage = "AdminList";
+        private const string BalanceStorage = "Balance";
 
         private bool _eventSubscribed = false;
         private readonly INftClient _nftClient;
@@ -77,6 +80,20 @@ namespace NftUnity.MethodGroups
                 RemoveAdminMethod, 
                 sender,
                 privateKey));
+        }
+
+        public ulong? BalanceOf(GetBalanceOf getBalanceOf)
+        {
+            return _nftClient.MakeCallWithReconnect(application =>
+            {
+                var request = application.GetStorage(DoubleMapKey.Create(getBalanceOf), Module, BalanceStorage);
+                if (string.IsNullOrEmpty(request))
+                {
+                    return (ulong?)null;
+                }
+
+                return application.Serializer.DeserializeAssertReadAll<ulong>(request.HexToByteArray());
+            });
         }
 
         public AdminList? GetAdminList(ulong collectionId)

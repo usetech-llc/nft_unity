@@ -10,8 +10,8 @@ namespace NftUnity.Models.Calls.Collection
         public ulong CollectionId;
 
         [Serialize(1)]
-        [Converter(ConverterType = typeof(AddressConverter))]
-        public Address NewAdmin;
+        [AddressConverter]
+        public Address NewAdmin = null!;
 
         public AddCollectionAdmin()
         {

@@ -4,7 +4,7 @@ using Polkadot.DataStructs;
 
 namespace NftUnity.Models.Calls.Collection
 {
-    public class RemoveCollectionAdmin
+    public class GetBalanceOf
     {
         [Serialize(0)]
         public ulong CollectionId;
@@ -13,11 +13,11 @@ namespace NftUnity.Models.Calls.Collection
         [AddressConverter]
         public Address Account = null!;
 
-        public RemoveCollectionAdmin()
+        public GetBalanceOf()
         {
         }
 
-        public RemoveCollectionAdmin(ulong collectionId, Address account)
+        public GetBalanceOf(ulong collectionId, Address account)
         {
             CollectionId = collectionId;
             Account = account;

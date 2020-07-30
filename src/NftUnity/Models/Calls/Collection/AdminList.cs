@@ -8,7 +8,7 @@ namespace NftUnity.Models.Calls.Collection
     {
         [Serialize(0)]
         [PrefixedArrayConverter]
-        public PublicKey[] Admins;
+        public PublicKey[] Admins = null!;
 
         public AdminList()
         {

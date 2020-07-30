@@ -162,5 +162,25 @@ namespace NftUnity.Test.MethodGroupsTests
                 Assert.DoesNotContain(adminListAfter.Admins, pk => account2PublicKey == pk.Bytes);
             }
         }
+
+        [Fact]
+        public async Task BalanceOfOwnerIsOne()
+        {
+            var itemKey = await CreateTestAccount1Item();
+
+            var client = CreateClient();
+            var balance = client.CollectionManagement.BalanceOf(new GetBalanceOf(itemKey.CollectionId, new Address(Configuration.Account1.Address)));
+            Assert.Equal(1UL, balance);
+        }
+
+        [Fact]
+        public async Task BalanceOfNotOwnerIsZero()
+        {
+            var itemKey = await CreateTestAccount1Item();
+
+            var client = CreateClient();
+            var balance = client.CollectionManagement.BalanceOf(new GetBalanceOf(itemKey.CollectionId, new Address(Configuration.Account2.Address)));
+            Assert.Equal(0UL, balance ?? 0);
+        }
     }
 }

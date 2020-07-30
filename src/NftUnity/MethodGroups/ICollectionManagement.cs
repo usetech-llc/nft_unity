@@ -58,6 +58,15 @@ namespace NftUnity.MethodGroups
         /// <returns></returns>
         string RemoveCollectionAdmin(RemoveCollectionAdmin removeCollectionAdmin, Address sender, string privateKey);
 
+        /// <summary>
+        /// Non-Fungible Mode: This method is included for compatibility with ERC-721. Return the total count of NFTs of a given Collection that belong to a given address. 
+        /// Fungible Mode: Return the amount of token owned by a given address
+        /// Re-fungible Mode: Same as non-fungible, but the returned value may be fractional.
+        /// </summary>
+        /// <param name="getBalanceOf"></param>
+        /// <returns></returns>
+        ulong? BalanceOf(GetBalanceOf getBalanceOf);
+
         AdminList? GetAdminList(ulong collectionId);
         
         event EventHandler<Created> CollectionCreated;
