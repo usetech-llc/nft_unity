@@ -105,5 +105,16 @@ namespace NftUnity.Test.MethodGroupsTests
             var approveList = client.ItemManagement.GetApproved(key);
             Assert.Contains(approveList!.ApprovedAccounts, a => a.Bytes.ToHexString().Equals(publicKey2.Bytes.ToHexString()));
         }
+
+        [Fact]
+        public async Task NextItemIdGreaterOrEqualToLastCreatedItemId()
+        {
+            var key = await CreateTestAccount1Item();
+
+            using var client = CreateClient();
+            var nextId = client.ItemManagement.NextId(key.CollectionId);
+            
+            Assert.True(nextId >= key.ItemId);
+        }
     }
 }

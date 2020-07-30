@@ -3,6 +3,7 @@ using NftUnity.Extensions;
 using NftUnity.Models;
 using NftUnity.Models.Calls.Item;
 using NftUnity.Models.Events;
+using Polkadot.BinaryContracts;
 using Polkadot.BinarySerializer;
 using Polkadot.BinarySerializer.Extensions;
 using Polkadot.DataStructs;
@@ -21,6 +22,7 @@ namespace NftUnity.MethodGroups
         
         private const string ItemStorage = "ItemList";
         private const string ApprovedStorage = "ApprovedList";
+        private const string ItemListIndexStorage = "ItemListIndex";
 
         private readonly INftClient _nftClient;
         private bool _eventsSubscribed = false;
@@ -63,6 +65,12 @@ namespace NftUnity.MethodGroups
         {
             return _nftClient.MakeCallWithReconnect(application => 
                 application.GetStorageObject<ApprovedList, DoubleMapKey<ItemKey>>(DoubleMapKey.Create(key), Module, ApprovedStorage));
+        }
+
+        public ulong? NextId(ulong collectionId)
+        {
+            return _nftClient.MakeCallWithReconnect(application =>
+                application.GetStorageObject<ulong?, DoubleMapKey<ulong>>(DoubleMapKey.Create<ulong>(collectionId), Module, ItemListIndexStorage));
         }
 
         private event EventHandler<ItemCreated>? ItemCreated = null;

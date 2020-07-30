@@ -56,6 +56,8 @@ namespace NftUnity.MethodGroups
         /// <returns></returns>
         ApprovedList? GetApproved(ItemKey key);
 
+        ulong? NextId(ulong collectionId);
+
         event EventHandler<ItemCreated> ItemCreated;
         event EventHandler<ItemDestroyed> ItemDestroyed;
     }
