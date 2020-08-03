@@ -251,5 +251,34 @@ namespace NftUnity.Test.MethodGroupsTests
 
             Assert.Contains(tokens!.TokenIds, id => id == itemKey.ItemId);
         }
+        
+        
+        [Fact]
+        public async Task RemoveSponsorRemovesUnconfirmedSponsor()
+        {
+            var id = await CreateTestAliceCollection();
+
+            using var client = CreateClient();
+
+            client.CollectionManagement.SetCollectionSponsor(
+                new SetCollectionSponsor(id, new Address(Configuration.Bob.Address)),
+                new Address(Configuration.Alice.Address), Configuration.Alice.PrivateKey);
+
+            await WaitBlocks(2);
+
+            client.CollectionManagement.ConfirmSponsorship(id, new Address(Configuration.Bob.Address), Configuration.Bob.PrivateKey);
+            
+            await WaitBlocks(2);
+
+            client.CollectionManagement.RemoveSponsor(new RemoveCollectionSponsor(id), new Address(Configuration.Alice.Address), Configuration.Alice.PrivateKey);
+
+            await WaitBlocks(2);
+            
+            var collection = client.CollectionManagement.GetCollection(id);
+            
+            Assert.All(collection!.UnconfirmedSponsor.Bytes, b => Assert.Equal(0, b));
+            Assert.All(collection.Sponsor.Bytes, b => Assert.Equal(0, b));
+        }
+
     }
 }
