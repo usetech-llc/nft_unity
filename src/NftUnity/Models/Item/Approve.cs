@@ -2,7 +2,7 @@
 using Polkadot.BinarySerializer;
 using Polkadot.DataStructs;
 
-namespace NftUnity.Models.Calls.Item
+namespace NftUnity.Models.Item
 {
     public class Approve
     {

@@ -2,25 +2,25 @@
 using Polkadot.BinarySerializer;
 using Polkadot.DataStructs;
 
-namespace NftUnity.Models.Calls.Collection
+namespace NftUnity.Models.Collection
 {
-    public class GetBalanceOf
+    public class SetCollectionSponsor
     {
         [Serialize(0)]
         public ulong CollectionId;
 
         [Serialize(1)]
         [AddressConverter]
-        public Address Account = null!;
+        public Address NewSponsor = null!;
 
-        public GetBalanceOf()
+        public SetCollectionSponsor()
         {
         }
 
-        public GetBalanceOf(ulong collectionId, Address account)
+        public SetCollectionSponsor(ulong collectionId, Address newSponsor)
         {
             CollectionId = collectionId;
-            Account = account;
+            NewSponsor = newSponsor;
         }
     }
 }

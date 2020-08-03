@@ -1,6 +1,6 @@
 ﻿using Polkadot.BinarySerializer;
 
-namespace NftUnity.Models.Calls.Collection
+namespace NftUnity.Models.Collection
 {
     public class DestroyCollection
     {

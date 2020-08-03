@@ -1,13 +1,10 @@
 ﻿using System;
 using NftUnity.Extensions;
-using NftUnity.Models;
-using NftUnity.Models.Calls.Item;
 using NftUnity.Models.Events;
+using NftUnity.Models.Item;
 using Polkadot.BinaryContracts;
 using Polkadot.BinarySerializer;
-using Polkadot.BinarySerializer.Extensions;
 using Polkadot.DataStructs;
-using Polkadot.Utils;
 
 namespace NftUnity.MethodGroups
 {
@@ -18,9 +15,12 @@ namespace NftUnity.MethodGroups
         private const string CreateItemMethod = "create_item";
         private const string BurnItemMethod = "burn_item";
         private const string TransferMethod = "transfer";
+        private const string TransferFromMethod = "transfer_from";
         private const string ApproveMethod = "approve";
         
-        private const string ItemStorage = "ItemList";
+        private const string NftItemStorage = "NftItemList";
+        private const string FungibleItemStorage = "FungibleItemType";
+        private const string ReFungibleItemStorage = "ReFungibleItemList";
         private const string ApprovedStorage = "ApprovedList";
         private const string ItemListIndexStorage = "ItemListIndex";
 
@@ -50,32 +50,43 @@ namespace NftUnity.MethodGroups
                 application.SubmitExtrinsicObject(transfer, Module, TransferMethod, sender, privateKey));
         }
 
+        public string TransferFrom(TransferFrom transferFrom, Address sender, string privateKey)
+        {
+            return _nftClient.MakeCallWithReconnect(application =>
+                application.SubmitExtrinsicObject(transferFrom, Module, TransferFromMethod, sender, privateKey));
+        }
+
         public string Approve(Approve approve, Address sender, string privateKey)
         {
             return _nftClient.MakeCallWithReconnect(application =>
                 application.SubmitExtrinsicObject(approve, Module, ApproveMethod, sender, privateKey));
         }
 
-        public Item? GetItem(ItemKey key)
+        public NftItem? GetNftItem(ItemKey key)
         {
-            return _nftClient.MakeCallWithReconnect(application => application.GetStorageObject<Item, DoubleMapKey<ItemKey>>(DoubleMapKey.Create(key), Module, ItemStorage));
+            return _nftClient.MakeCallWithReconnect(application => application.GetStorageObject<NftItem, DoubleMapKey<ulong, ulong>>(StorageKey(key), Module, NftItemStorage));
+        }
+
+        private static DoubleMapKey<ulong, ulong> StorageKey(ItemKey key)
+        {
+            return DoubleMapKey.Create(key.CollectionId, key.ItemId);
         }
 
         public ApprovedList? GetApproved(ItemKey key)
         {
             return _nftClient.MakeCallWithReconnect(application => 
-                application.GetStorageObject<ApprovedList, DoubleMapKey<ItemKey>>(DoubleMapKey.Create(key), Module, ApprovedStorage));
+                application.GetStorageObject<ApprovedList, DoubleMapKey<ulong, ulong>>(StorageKey(key), Module, ApprovedStorage));
         }
 
         public PublicKey? GetOwner(ItemKey key)
         {
-            return GetItem(key)?.Owner;
+            return GetNftItem(key)?.Owner;
         }
 
         public ulong? NextId(ulong collectionId)
         {
             return _nftClient.MakeCallWithReconnect(application =>
-                application.GetStorageObject<ulong?, DoubleMapKey<ulong>>(DoubleMapKey.Create<ulong>(collectionId), Module, ItemListIndexStorage));
+                application.GetStorageObject<ulong?, MapKey<ulong>>(MapKey.Create(collectionId), Module, ItemListIndexStorage));
         }
 
         private event EventHandler<ItemCreated>? ItemCreated = null;

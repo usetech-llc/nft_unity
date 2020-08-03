@@ -1,12 +1,10 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
+using Polkadot.BinaryContracts;
 using Polkadot.BinarySerializer;
 using Polkadot.DataStructs;
-using Polkadot.DataStructs.Metadata;
-using Polkadot.Utils;
 
-namespace NftUnity.Models.Calls.Item
+namespace NftUnity.Models.Item
 {
     public class ItemKey
     {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using NftUnity.Models.Calls.Collection;
+using NftUnity.Models.Collection;
+using NftUnity.Models.Collection.CollectionModeEnum;
 using NftUnity.Models.Events;
 using Polkadot.DataStructs;
 using Polkadot.Utils;
@@ -22,20 +23,22 @@ namespace NftUnity.Test.MethodGroupsTests
             var collectionDescription = "1111";
             var tokenPrefix = "1111";
             var size = 200u;
-            
+            var decimalPoints = 0u;
+            var mode = new CollectionMode(new Nft());
+
             var collectionCreatedTask = new TaskCompletionSource<Created>();
-            var createCollection = new CreateCollection(collectionName, collectionDescription, tokenPrefix, size);
+            var createCollection = new CreateCollection(collectionName, collectionDescription, tokenPrefix, mode, decimalPoints, size);
             using var blockClient = CreateClient();
             blockClient.CollectionManagement.CollectionCreated += (sender, @event) =>
             {
-                if (AddressUtils.GetAddrFromPublicKey(@event.Account).Equals(Configuration.Account1.Address))
+                if (AddressUtils.GetAddrFromPublicKey(@event.Account).Equals(Configuration.Alice.Address))
                 {
                     collectionCreatedTask.SetResult(@event);
                 }
             };
 
             using var client = CreateClient();
-            client.CollectionManagement.CreateCollection(createCollection,new Address(Configuration.Account1.Address), Configuration.Account1.PrivateKey);
+            client.CollectionManagement.CreateCollection(createCollection,new Address(Configuration.Alice.Address), Configuration.Alice.PrivateKey);
 
             await collectionCreatedTask.Task
                 .WithTimeout(TimeSpan.FromMinutes(1));
@@ -52,19 +55,21 @@ namespace NftUnity.Test.MethodGroupsTests
             var description = Guid.NewGuid().ToString("N");
             var prefix = Guid.NewGuid().ToString("N")[..15];
             var size = 9u;
+            var decimalPoints = 0u;
+            var mode = new CollectionMode(new Nft());
             
             var collectionCreatedTask = new TaskCompletionSource<Created>();
-            var createCollection = new CreateCollection(name, description, prefix, size);
+            var createCollection = new CreateCollection(name, description, prefix, mode, decimalPoints, size);
             using var blockClient = CreateClient();
             blockClient.CollectionManagement.CollectionCreated += (sender, @event) =>
             {
-                if (AddressUtils.GetAddrFromPublicKey(@event.Account).Equals(Configuration.Account1.Address))
+                if (AddressUtils.GetAddrFromPublicKey(@event.Account).Equals(Configuration.Alice.Address))
                 {
                     collectionCreatedTask.SetResult(@event);
                 }
             };
 
-            blockClient.CollectionManagement.CreateCollection(createCollection, new Address() {Symbols = Configuration.Account1.Address}, Configuration.Account1.PrivateKey);
+            blockClient.CollectionManagement.CreateCollection(createCollection, new Address() {Symbols = Configuration.Alice.Address}, Configuration.Alice.PrivateKey);
 
             var created = await collectionCreatedTask.Task;
 
@@ -74,7 +79,7 @@ namespace NftUnity.Test.MethodGroupsTests
             Assert.Equal(description, collection.Description);
             Assert.Equal(prefix, collection.TokenPrefix);
             Assert.Equal(size, collection.CustomDataSize);
-            Assert.Equal(AddressUtils.GetPublicKeyFromAddr(Configuration.Account1.Address).Bytes, collection.Owner.Bytes);
+            Assert.Equal(AddressUtils.GetPublicKeyFromAddr(Configuration.Alice.Address).Bytes, collection.Owner.Bytes);
         }
 
         [Fact]
@@ -82,25 +87,25 @@ namespace NftUnity.Test.MethodGroupsTests
         {
             using var client = CreateClient();
 
-            var id = await CreateTestAccount1Collection();
+            var id = await CreateTestAliceCollection();
             
-            var changeCollectionOwner = new ChangeOwner(id, new Address(Configuration.Account2.Address));
+            var changeCollectionOwner = new ChangeOwner(id, new Address(Configuration.Bob.Address));
 
-            client.CollectionManagement.ChangeCollectionOwner(changeCollectionOwner, new Address(Configuration.Account1.Address), Configuration.Account1.PrivateKey);
+            client.CollectionManagement.ChangeCollectionOwner(changeCollectionOwner, new Address(Configuration.Alice.Address), Configuration.Alice.PrivateKey);
 
             var collection = client.CollectionManagement.GetCollection(id);
             
-            Assert.Equal(AddressUtils.GetPublicKeyFromAddr(Configuration.Account1.Address).Bytes, collection!.Owner.Bytes);
+            Assert.Equal(AddressUtils.GetPublicKeyFromAddr(Configuration.Alice.Address).Bytes, collection!.Owner.Bytes);
         }
 
         [Fact]
         public async Task DestroyingCollectionMakesItDisappear()
         {
-            var id = await CreateTestAccount1Collection();
+            var id = await CreateTestAliceCollection();
 
             using var client = CreateClient();
             client.CollectionManagement.DestroyCollection(new DestroyCollection(id),
-                new Address(Configuration.Account1.Address), Configuration.Account1.PrivateKey);
+                new Address(Configuration.Alice.Address), Configuration.Alice.PrivateKey);
 
             await WaitBlocks(10);
            
@@ -111,9 +116,9 @@ namespace NftUnity.Test.MethodGroupsTests
         [Fact]
         public async Task AddCollectionAdminAddsAccountToAdminList()
         {
-            var id = await CreateTestAccount1Collection();
+            var id = await CreateTestAliceCollection();
             
-            var account2PublicKey = AddressUtils.GetPublicKeyFromAddr(Configuration.Account2.Address).Bytes;
+            var account2PublicKey = AddressUtils.GetPublicKeyFromAddr(Configuration.Bob.Address).Bytes;
             
             using var client = CreateClient();
 
@@ -124,8 +129,8 @@ namespace NftUnity.Test.MethodGroupsTests
             }
 
             client.CollectionManagement.AddCollectionAdmin(
-                new AddCollectionAdmin(id, new Address(Configuration.Account2.Address)),
-                new Address(Configuration.Account1.Address), Configuration.Account1.PrivateKey);
+                new AddCollectionAdmin(id, new Address(Configuration.Bob.Address)),
+                new Address(Configuration.Alice.Address), Configuration.Alice.PrivateKey);
 
             await WaitBlocks(2);
 
@@ -136,15 +141,15 @@ namespace NftUnity.Test.MethodGroupsTests
         [Fact]
         public async Task RemoveCollectionAdminRemovesAdminFromList()
         {
-            var id = await CreateTestAccount1Collection();
+            var id = await CreateTestAliceCollection();
             
-            var account2PublicKey = AddressUtils.GetPublicKeyFromAddr(Configuration.Account2.Address).Bytes;
+            var account2PublicKey = AddressUtils.GetPublicKeyFromAddr(Configuration.Bob.Address).Bytes;
             
             using var client = CreateClient();
 
             client.CollectionManagement.AddCollectionAdmin(
-                new AddCollectionAdmin(id, new Address(Configuration.Account2.Address)),
-                new Address(Configuration.Account1.Address), Configuration.Account1.PrivateKey);
+                new AddCollectionAdmin(id, new Address(Configuration.Bob.Address)),
+                new Address(Configuration.Alice.Address), Configuration.Alice.PrivateKey);
 
             await WaitBlocks(2);
 
@@ -152,8 +157,8 @@ namespace NftUnity.Test.MethodGroupsTests
             Assert.Contains(adminList!.Admins, pk => pk.Bytes.ToHexString().Equals(account2PublicKey.ToHexString()));
 
             client.CollectionManagement.RemoveCollectionAdmin(
-                new RemoveCollectionAdmin(id, new Address(Configuration.Account2.Address)),
-                new Address(Configuration.Account1.Address), Configuration.Account1.PrivateKey);
+                new RemoveCollectionAdmin(id, new Address(Configuration.Bob.Address)),
+                new Address(Configuration.Alice.Address), Configuration.Alice.PrivateKey);
 
             await WaitBlocks(2);
             var adminListAfter = client.CollectionManagement.GetAdminList(id);
@@ -166,32 +171,49 @@ namespace NftUnity.Test.MethodGroupsTests
         [Fact]
         public async Task BalanceOfOwnerIsOne()
         {
-            var itemKey = await CreateTestAccount1Item();
+            var itemKey = await CreateTestAliceItem();
 
             var client = CreateClient();
-            var balance = client.CollectionManagement.BalanceOf(new GetBalanceOf(itemKey.CollectionId, new Address(Configuration.Account1.Address)));
+            var balance = client.CollectionManagement.BalanceOf(new GetBalanceOf(itemKey.CollectionId, new Address(Configuration.Alice.Address)));
             Assert.Equal(1UL, balance);
         }
 
         [Fact]
         public async Task BalanceOfNotOwnerIsZero()
         {
-            var itemKey = await CreateTestAccount1Item();
+            var itemKey = await CreateTestAliceItem();
 
             var client = CreateClient();
-            var balance = client.CollectionManagement.BalanceOf(new GetBalanceOf(itemKey.CollectionId, new Address(Configuration.Account2.Address)));
+            var balance = client.CollectionManagement.BalanceOf(new GetBalanceOf(itemKey.CollectionId, new Address(Configuration.Bob.Address)));
             Assert.Equal(0UL, balance ?? 0);
         }
 
         [Fact]
         public async Task NextIdGreaterOrEqualLastCreatedCollectionId()
         {
-            var id = await CreateTestAccount1Collection();
+            var id = await CreateTestAliceCollection();
 
             using var client = CreateClient();
             var nextId = client.CollectionManagement.NextCollectionId();
             
             Assert.True(nextId >= id);
+        }
+
+        [Fact]
+        public async Task SetCollectionSponsorAddsUnconfirmedSponsor()
+        {
+            var id = await CreateTestAliceCollection();
+
+            using var client = CreateClient();
+
+            client.CollectionManagement.SetCollectionSponsor(
+                new SetCollectionSponsor(id, new Address(Configuration.Bob.Address)),
+                new Address(Configuration.Alice.Address), Configuration.Alice.PrivateKey);
+
+            await WaitBlocks(2);
+            var collection = client.CollectionManagement.GetCollection(id);
+            
+            Assert.Equal(AddressUtils.GetPublicKeyFromAddr(Configuration.Bob.Address).Bytes, collection!.UnconfirmedSponsor.Bytes);
         }
     }
 }

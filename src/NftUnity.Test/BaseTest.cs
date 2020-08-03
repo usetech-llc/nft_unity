@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using NftUnity.Extensions;
-using NftUnity.Models.Calls.Collection;
-using NftUnity.Models.Calls.Item;
+using NftUnity.Models.Collection;
+using NftUnity.Models.Collection.CollectionModeEnum;
 using NftUnity.Models.Events;
+using NftUnity.Models.Item;
 using Polkadot;
 using Polkadot.DataStructs;
 using Polkadot.Utils;
@@ -29,33 +30,37 @@ namespace NftUnity.Test
         }
 
 
-        public async Task<ulong> CreateTestAccount1Collection()
+        public async Task<ulong> CreateTestAliceCollection(CollectionMode? mode = null)
         {
+            mode ??= new CollectionMode(new Nft());
             var name = Guid.NewGuid().ToString("N");
             var description = Guid.NewGuid().ToString("N");
             var prefix = Guid.NewGuid().ToString("N")[..15];
-            var size = 256u;
+            var createCollection = mode.Mode.Match(
+                invalid => throw new ArgumentException(),
+                nft => new CreateCollection(name, description, prefix, mode, 0, 256u),
+                fungible => new CreateCollection(name, description, prefix, mode, 100u, 0),
+                reFungible => new CreateCollection(name, description, prefix, mode, 0, 0));
             
             var collectionCreatedTask = new TaskCompletionSource<Created>();
-            var createCollection = new CreateCollection(name, description, prefix, size);
             using var blockClient = CreateClient();
             blockClient.CollectionManagement.CollectionCreated += (sender, @event) =>
             {
-                if (AddressUtils.GetAddrFromPublicKey(@event.Account).Equals(Configuration.Account1.Address))
+                if (AddressUtils.GetAddrFromPublicKey(@event.Account).Equals(Configuration.Alice.Address))
                 {
                     collectionCreatedTask.SetResult(@event);
                 }
             };
 
-            blockClient.CollectionManagement.CreateCollection(createCollection, new Address() {Symbols = Configuration.Account1.Address}, Configuration.Account1.PrivateKey);
+            blockClient.CollectionManagement.CreateCollection(createCollection, new Address() {Symbols = Configuration.Alice.Address}, Configuration.Alice.PrivateKey);
 
             var created = await collectionCreatedTask.Task.WithTimeout(TimeSpan.FromSeconds(30));
             return created.Id;
         }
 
-        public async Task<ItemKey> CreateTestAccount1Item()
+        public async Task<ItemKey> CreateTestAliceItem(CollectionMode? mode = null)
         {
-            var collectionId = await CreateTestAccount1Collection();
+            var collectionId = await CreateTestAliceCollection(mode);
             
             var keyTask = new TaskCompletionSource<ItemKey>();
 
@@ -68,8 +73,8 @@ namespace NftUnity.Test
                 }
             };
 
-            client.ItemManagement.CreateItem(new CreateItem(collectionId, Guid.NewGuid().ToByteArray()),
-                new Address(Configuration.Account1.Address), Configuration.Account1.PrivateKey);
+            client.ItemManagement.CreateItem(new CreateItem(collectionId, Guid.NewGuid().ToByteArray(), new Address(Configuration.Alice.Address)),
+                new Address(Configuration.Alice.Address), Configuration.Alice.PrivateKey);
             
             return await keyTask.Task;
         }

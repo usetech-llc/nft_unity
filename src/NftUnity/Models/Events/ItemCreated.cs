@@ -1,4 +1,4 @@
-﻿using NftUnity.Models.Calls.Item;
+﻿using NftUnity.Models.Item;
 using Polkadot.BinaryContracts.Events;
 using Polkadot.BinarySerializer;
 

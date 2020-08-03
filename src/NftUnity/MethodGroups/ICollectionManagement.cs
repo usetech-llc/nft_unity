@@ -1,6 +1,6 @@
 ﻿using System;
 using NftUnity.Models;
-using NftUnity.Models.Calls.Collection;
+using NftUnity.Models.Collection;
 using NftUnity.Models.Events;
 using Polkadot.DataStructs;
 
@@ -57,6 +57,10 @@ namespace NftUnity.MethodGroups
         /// <param name="privateKey"></param>
         /// <returns></returns>
         string RemoveCollectionAdmin(RemoveCollectionAdmin removeCollectionAdmin, Address sender, string privateKey);
+
+        string SetCollectionSponsor(SetCollectionSponsor setCollectionSponsor, Address sender, string privateKey);
+
+        string ConfirmSponsorship(ulong collectionId, Address sender, string privateKey);
 
         /// <summary>
         /// Non-Fungible Mode: This method is included for compatibility with ERC-721. Return the total count of NFTs of a given Collection that belong to a given address. 

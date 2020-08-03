@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using NftUnity.MethodGroups;
-using NftUnity.Models.Calls.Collection;
-using NftUnity.Models.Calls.Item;
 using NftUnity.Models.Events;
+using NftUnity.Models.Item;
 using Polkadot.DataStructs;
 using Polkadot.Utils;
 using Xunit;
@@ -23,10 +22,10 @@ namespace NftUnity.Test.MethodGroupsTests
             var bytes = new byte[] {15, 97, 136, 0, 76, 187, 168, 28, 239, 85, 170, 23, 77, 81, 248, 159,};
             var str = bytes.ToHexString();
                 
-            var collectionId = await CreateTestAccount1Collection();
+            var collectionId = await CreateTestAliceCollection();
             var properties = Guid.NewGuid().ToByteArray();
             
-            var createItem = new CreateItem(collectionId, properties);
+            var createItem = new CreateItem(collectionId, properties, new Address(Configuration.Alice.Address));
             using var client = CreateClient();
             
             var itemCreatedTask = new TaskCompletionSource<ItemCreated>();
@@ -38,21 +37,21 @@ namespace NftUnity.Test.MethodGroupsTests
                 }
             };
 
-            client.ItemManagement.CreateItem(createItem, new Address(Configuration.Account1.Address), Configuration.Account1.PrivateKey);
+            client.ItemManagement.CreateItem(createItem, new Address(Configuration.Alice.Address), Configuration.Alice.PrivateKey);
 
             var key = (await itemCreatedTask.Task.WithTimeout(TimeSpan.FromSeconds(30))).Key;
 
-            var item = client.ItemManagement.GetItem(key);
+            var item = client.ItemManagement.GetNftItem(key);
             
             Assert.Equal(properties, item!.Data);
             Assert.Equal(collectionId, item!.CollectionId);
-            Assert.Equal(AddressUtils.GetPublicKeyFromAddr(Configuration.Account1.Address).Bytes, item!.Owner.Bytes);
+            Assert.Equal(AddressUtils.GetPublicKeyFromAddr(Configuration.Alice.Address).Bytes, item!.Owner.Bytes);
         }
 
         [Fact]
         public async Task BurnItemEmitsEvent()
         {
-            var itemKey = await CreateTestAccount1Item();
+            var itemKey = await CreateTestAliceItem();
 
             using var client = CreateClient();
             var destroyedTask = new TaskCompletionSource<ItemDestroyed>();
@@ -64,7 +63,7 @@ namespace NftUnity.Test.MethodGroupsTests
                 }
             };
 
-            client.ItemManagement.BurnItem(itemKey, new Address(Configuration.Account1.Address), Configuration.Account1.PrivateKey);
+            client.ItemManagement.BurnItem(itemKey, new Address(Configuration.Alice.Address), Configuration.Alice.PrivateKey);
             var destroyedResult = await destroyedTask.Task.WithTimeout(TimeSpan.FromSeconds(30));
             
             Assert.NotNull(destroyedResult);
@@ -73,33 +72,33 @@ namespace NftUnity.Test.MethodGroupsTests
         [Fact]
         public async Task TransferChangesOwner()
         {
-            var key = await CreateTestAccount1Item();
+            var key = await CreateTestAliceItem();
 
             using var client = CreateClient();
-            client.ItemManagement.Transfer(new Transfer(key, new Address(Configuration.Account2.Address)),
-                new Address(Configuration.Account1.Address), Configuration.Account1.PrivateKey);
+            client.ItemManagement.Transfer(new Transfer(new Address(Configuration.Bob.Address), key, 0),
+                new Address(Configuration.Alice.Address), Configuration.Alice.PrivateKey);
 
             await WaitBlocks(2);
 
-            var item = client.ItemManagement.GetItem(key);
-            Assert.Equal(AddressUtils.GetPublicKeyFromAddr(Configuration.Account2.Address).Bytes, item?.Owner.Bytes);
+            var item = client.ItemManagement.GetNftItem(key);
+            Assert.Equal(AddressUtils.GetPublicKeyFromAddr(Configuration.Bob.Address).Bytes, item?.Owner.Bytes);
         }
 
         [Fact]
         public async Task ApproveAddsAccountToApprovedList()
         {
-            var key = await CreateTestAccount1Item();
+            var key = await CreateTestAliceItem();
 
             using var client = CreateClient();
-            var publicKey2 = AddressUtils.GetPublicKeyFromAddr(Configuration.Account2.Address);
+            var publicKey2 = AddressUtils.GetPublicKeyFromAddr(Configuration.Bob.Address);
             var approveListBefore = client.ItemManagement.GetApproved(key);
             if (approveListBefore != null)
             {
                 Assert.DoesNotContain(approveListBefore!.ApprovedAccounts, a => a.Bytes.ToHexString().Equals(publicKey2.Bytes.ToHexString()));
             }
 
-            client.ItemManagement.Approve(new Approve(new Address(Configuration.Account2.Address), key),
-                new Address(Configuration.Account1.Address), Configuration.Account1.PrivateKey);
+            client.ItemManagement.Approve(new Approve(new Address(Configuration.Bob.Address), key),
+                new Address(Configuration.Alice.Address), Configuration.Alice.PrivateKey);
 
             await WaitBlocks(2);
 
@@ -107,10 +106,10 @@ namespace NftUnity.Test.MethodGroupsTests
             Assert.Contains(approveList!.ApprovedAccounts, a => a.Bytes.ToHexString().Equals(publicKey2.Bytes.ToHexString()));
         }
 
-        [Fact(Skip = "Not part of api")]
+        [Fact(Skip = "Not part of the api.")]
         public async Task NextItemIdGreaterOrEqualToLastCreatedItemId()
         {
-            var key = await CreateTestAccount1Item();
+            var key = await CreateTestAliceItem();
 
             using var client = CreateClient();
             var nextId = ((ItemManagement)client.ItemManagement).NextId(key.CollectionId);
@@ -121,12 +120,55 @@ namespace NftUnity.Test.MethodGroupsTests
         [Fact]
         public async Task GetOwnerReturnsItCreatorAfterCreation()
         {
-            var key = await CreateTestAccount1Item();
+            var key = await CreateTestAliceItem();
 
             using var client = CreateClient();
             var owner = client.ItemManagement.GetOwner(key);
             
-            Assert.Equal(AddressUtils.GetPublicKeyFromAddr(Configuration.Account1.Address).Bytes, owner!.Bytes);
+            Assert.Equal(AddressUtils.GetPublicKeyFromAddr(Configuration.Alice.Address).Bytes, owner!.Bytes);
+        }
+
+        [Fact(Skip = "Backend errors.")]
+        public async Task TransferFromChangesOwnerIfMadeByApprovedAccount()
+        {
+            var key = await CreateTestAliceItem();
+
+            using var client = CreateClient();
+            client.ItemManagement.Approve(new Approve(new Address(Configuration.Bob.Address), key),
+                new Address(Configuration.Alice.Address), Configuration.Alice.PrivateKey);
+
+            await WaitBlocks(2);
+
+            client.ItemManagement.TransferFrom(new TransferFrom(new Address(Configuration.Charlie.Address), key),
+                new Address(Configuration.Bob.Address), Configuration.Bob.PrivateKey);
+
+            await WaitBlocks(2);
+            
+            var item = client.ItemManagement.GetNftItem(key);
+            
+            Assert.Equal(AddressUtils.GetPublicKeyFromAddr(Configuration.Charlie.Address).Bytes, item!.Owner.Bytes);
+
+            var approvedList = client.ItemManagement.GetApproved(key);
+
+            if (approvedList != null)
+            {
+                Assert.DoesNotContain(approvedList.ApprovedAccounts, a => a.Bytes.ToHexString().Equals(AddressUtils.GetPublicKeyFromAddr(Configuration.Bob.Address).Bytes.ToHexString()));
+            }
+        }
+
+        [Fact]
+        public async Task TransferFromFailsForNotApprovedAccount()
+        {
+            var key = await CreateTestAliceItem();
+
+            using var client = CreateClient();
+            client.ItemManagement.TransferFrom(new TransferFrom(new Address(Configuration.Charlie.Address), key), new Address(Configuration.Bob.Address), Configuration.Bob.PrivateKey);
+
+            await WaitBlocks(2);
+
+            var item = client.ItemManagement.GetNftItem(key);
+            
+            Assert.Equal(AddressUtils.GetPublicKeyFromAddr(Configuration.Alice.Address).Bytes, item!.Owner.Bytes);
         }
     }
 }

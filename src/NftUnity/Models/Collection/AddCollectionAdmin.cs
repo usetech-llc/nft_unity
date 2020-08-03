@@ -2,25 +2,25 @@
 using Polkadot.BinarySerializer;
 using Polkadot.DataStructs;
 
-namespace NftUnity.Models.Calls.Collection
+namespace NftUnity.Models.Collection
 {
-    public class RemoveCollectionAdmin
+    public class AddCollectionAdmin
     {
         [Serialize(0)]
         public ulong CollectionId;
 
         [Serialize(1)]
         [AddressConverter]
-        public Address Account = null!;
+        public Address NewAdmin = null!;
 
-        public RemoveCollectionAdmin()
+        public AddCollectionAdmin()
         {
         }
 
-        public RemoveCollectionAdmin(ulong collectionId, Address account)
+        public AddCollectionAdmin(ulong collectionId, Address newAdmin)
         {
             CollectionId = collectionId;
-            Account = account;
+            NewAdmin = newAdmin;
         }
     }
 }

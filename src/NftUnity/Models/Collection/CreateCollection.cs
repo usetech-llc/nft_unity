@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Text;
 using NftUnity.Converters;
+using NftUnity.Models.Collection.CollectionModeEnum;
 using Polkadot.BinarySerializer;
 
-namespace NftUnity.Models.Calls.Collection
+namespace NftUnity.Models.Collection
 {
     public class CreateCollection
     {
@@ -67,18 +68,26 @@ Value: {value} is {length} long.");
         }
 
         [Serialize(3)]
+        public CollectionMode Mode = null!;
+
+        [Serialize(4)]
+        public uint DecimalPoints;
+
+        [Serialize(5)]
         public uint CustomDataSize { get; set; }
 
         public CreateCollection()
         {
         }
 
-        public CreateCollection(string name, string description, string tokenPrefix, uint customDataSize)
+        public CreateCollection(string name, string description, string tokenPrefix, CollectionMode mode, uint decimalPoints, uint customDataSize)
         {
             Name = name;
             Description = description;
             TokenPrefix = tokenPrefix;
             CustomDataSize = customDataSize;
+            Mode = mode;
+            DecimalPoints = decimalPoints;
         }
     }
 }

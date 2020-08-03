@@ -1,7 +1,9 @@
-﻿using Polkadot.BinarySerializer;
+﻿using NftUnity.Converters;
+using Polkadot.BinarySerializer;
 using Polkadot.BinarySerializer.Converters;
+using Polkadot.DataStructs;
 
-namespace NftUnity.Models.Calls.Item
+namespace NftUnity.Models.Item
 {
     public class CreateItem
     {
@@ -18,14 +20,19 @@ namespace NftUnity.Models.Calls.Item
         [PrefixedArrayConverter]
         public byte[] Properties = null!;
 
+        [Serialize(2)]
+        [AddressConverter]
+        public Address Owner = null!;
+
         public CreateItem()
         {
         }
 
-        public CreateItem(ulong collectionId, byte[] properties)
+        public CreateItem(ulong collectionId, byte[] properties, Address owner)
         {
             CollectionId = collectionId;
             Properties = properties;
+            Owner = owner;
         }
     }
 }

@@ -2,7 +2,7 @@
 using Polkadot.BinarySerializer.Converters;
 using Polkadot.DataStructs;
 
-namespace NftUnity.Models.Calls.Collection
+namespace NftUnity.Models.Collection
 {
     public class AdminList
     {

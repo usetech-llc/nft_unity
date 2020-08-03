@@ -6,8 +6,9 @@ namespace NftUnity.Test
     public class TestConfiguration
     {
         public string WsEndpoint { get; set; } = null!;
-        public AccountConfiguration Account1 { get; set; } = null!;
-        public AccountConfiguration Account2 { get; set; } = null!;
+        public AccountConfiguration Alice { get; set; } = null!;
+        public AccountConfiguration Bob { get; set; } = null!;
+        public AccountConfiguration Charlie { get; set; } = null!;
 
         public TestConfiguration()
         {

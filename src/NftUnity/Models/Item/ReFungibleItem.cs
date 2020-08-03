@@ -2,9 +2,9 @@
 using Polkadot.BinarySerializer.Converters;
 using Polkadot.DataStructs;
 
-namespace NftUnity.Models
+namespace NftUnity.Models.Item
 {
-    public class Item
+    public class ReFungibleItem
     {
         [Serialize(0)]
         public ulong CollectionId;
@@ -12,19 +12,14 @@ namespace NftUnity.Models
         [Serialize(1)]
         public PublicKey Owner = null!;
 
-        [Serialize(2)]
-        [PrefixedArrayConverter]
-        public byte[] Data = null!;
-
-        public Item()
+        public ReFungibleItem()
         {
         }
 
-        public Item(ulong collectionId, PublicKey owner, byte[] data)
+        public ReFungibleItem(ulong collectionId, PublicKey owner)
         {
             CollectionId = collectionId;
             Owner = owner;
-            Data = data;
         }
     }
 }

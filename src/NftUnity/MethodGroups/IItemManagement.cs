@@ -1,7 +1,7 @@
 ﻿using System;
 using NftUnity.Models;
-using NftUnity.Models.Calls.Item;
 using NftUnity.Models.Events;
+using NftUnity.Models.Item;
 using Polkadot.DataStructs;
 
 namespace NftUnity.MethodGroups
@@ -39,6 +39,15 @@ namespace NftUnity.MethodGroups
         string Transfer(Transfer transfer, Address sender, string privateKey);
 
         /// <summary>
+        /// Change ownership of a NFT on behalf of the owner. See Approve method for additional information. After this method executes, the approval is removed so that the approved address will not be able to transfer this NFT again from this owner.
+        /// </summary>
+        /// <param name="transferFrom"></param>
+        /// <param name="sender"></param>
+        /// <param name="privateKey"></param>
+        /// <returns></returns>
+        string TransferFrom(TransferFrom transferFrom, Address sender, string privateKey);
+
+        /// <summary>
         /// Set, change, or remove approved address to transfer the ownership of the NFT.
         /// </summary>
         /// <param name="approve"></param>
@@ -47,7 +56,7 @@ namespace NftUnity.MethodGroups
         /// <returns></returns>
         string Approve(Approve approve, Address sender, string privateKey);
 
-        Item? GetItem(ItemKey key);
+        NftItem? GetNftItem(ItemKey key);
 
         /// <summary>
         /// Get the approved addresses for a single NFT.

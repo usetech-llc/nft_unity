@@ -1,7 +1,7 @@
 ﻿using System;
 using NftUnity.Extensions;
 using NftUnity.Models;
-using NftUnity.Models.Calls.Collection;
+using NftUnity.Models.Collection;
 using NftUnity.Models.Events;
 using Polkadot.BinaryContracts;
 using Polkadot.BinarySerializer;
@@ -20,6 +20,8 @@ namespace NftUnity.MethodGroups
         private const string ChangeOwnerMethod = "change_collection_owner";
         private const string AddAdminMethod = "add_collection_admin";
         private const string RemoveAdminMethod = "remove_collection_admin";
+        private const string SetCollectionSponsorMethod = "set_collection_sponsor";
+        private const string ConfirmSponsorshipMethod = "confirm_sponsorship";
 
         private const string CollectionStorage = "Collection";
         private const string AdminListStorage = "AdminList";
@@ -84,9 +86,21 @@ namespace NftUnity.MethodGroups
                 privateKey));
         }
 
+        public string SetCollectionSponsor(SetCollectionSponsor setCollectionSponsor, Address sender, string privateKey)
+        {
+            return _nftClient.MakeCallWithReconnect(application =>
+                application.SubmitExtrinsicObject(setCollectionSponsor, Module, SetCollectionSponsorMethod, sender, privateKey));
+        }
+
+        public string ConfirmSponsorship(ulong collectionId, Address sender, string privateKey)
+        {
+            return _nftClient.MakeCallWithReconnect(application =>
+                application.SubmitExtrinsicObject(collectionId, Module, ConfirmSponsorshipMethod, sender, privateKey));
+        }
+
         public ulong? BalanceOf(GetBalanceOf getBalanceOf)
         {
-            return _nftClient.MakeCallWithReconnect(application => application.GetStorageObject<ulong?, DoubleMapKey<GetBalanceOf>>(DoubleMapKey.Create(getBalanceOf), Module, BalanceStorage));
+            return _nftClient.MakeCallWithReconnect(application => application.GetStorageObject<ulong?, DoubleMapKey<ulong, byte[]>>(new DoubleMapKey<ulong, byte[]>(getBalanceOf.CollectionId, AddressUtils.GetPublicKeyFromAddr(getBalanceOf.Account).Bytes), Module, BalanceStorage));
         }
 
         public AdminList? GetAdminList(ulong collectionId)

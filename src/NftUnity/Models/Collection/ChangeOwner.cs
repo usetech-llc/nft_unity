@@ -2,7 +2,7 @@
 using Polkadot.BinarySerializer;
 using Polkadot.DataStructs;
 
-namespace NftUnity.Models.Calls.Collection
+namespace NftUnity.Models.Collection
 {
     public class ChangeOwner
     {
