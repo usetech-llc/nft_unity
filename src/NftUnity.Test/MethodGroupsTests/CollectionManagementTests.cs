@@ -214,6 +214,30 @@ namespace NftUnity.Test.MethodGroupsTests
             var collection = client.CollectionManagement.GetCollection(id);
             
             Assert.Equal(AddressUtils.GetPublicKeyFromAddr(Configuration.Bob.Address).Bytes, collection!.UnconfirmedSponsor.Bytes);
+            Assert.NotEqual(AddressUtils.GetPublicKeyFromAddr(Configuration.Bob.Address).Bytes, collection!.Sponsor.Bytes);
+        }
+
+        [Fact]
+        public async Task ConfirmSponsorshipMakesSponsorConfirmed()
+        {
+            var id = await CreateTestAliceCollection();
+
+            using var client = CreateClient();
+
+            client.CollectionManagement.SetCollectionSponsor(
+                new SetCollectionSponsor(id, new Address(Configuration.Bob.Address)),
+                new Address(Configuration.Alice.Address), Configuration.Alice.PrivateKey);
+
+            await WaitBlocks(2);
+
+            client.CollectionManagement.ConfirmSponsorship(id, new Address(Configuration.Bob.Address), Configuration.Bob.PrivateKey);
+            
+            await WaitBlocks(2);
+
+            var collection = client.CollectionManagement.GetCollection(id);
+            
+            Assert.Equal(AddressUtils.GetPublicKeyFromAddr(Configuration.Bob.Address).Bytes, collection!.Sponsor.Bytes);
+            Assert.NotEqual(AddressUtils.GetPublicKeyFromAddr(Configuration.Bob.Address).Bytes, collection.UnconfirmedSponsor.Bytes);
         }
     }
 }
