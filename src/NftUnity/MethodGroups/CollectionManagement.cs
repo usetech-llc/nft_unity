@@ -27,6 +27,7 @@ namespace NftUnity.MethodGroups
         private const string AdminListStorage = "AdminList";
         private const string BalanceStorage = "Balance";
         private const string NextIdStorage = "NextCollectionID";
+        private const string AddressTokensStorage = "AddressTokens";
 
         private bool _eventSubscribed = false;
         private readonly INftClient _nftClient;
@@ -106,6 +107,15 @@ namespace NftUnity.MethodGroups
         public AdminList? GetAdminList(ulong collectionId)
         {
             return _nftClient.MakeCallWithReconnect(application => application.GetStorageObject<AdminList, ulong>(collectionId, Module, AdminListStorage));
+        }
+
+        public TokensList? AddressTokens(AddressTokens addressTokens)
+        {
+            var publicKey = AddressUtils.GetPublicKeyFromAddr(addressTokens.Owner).Bytes;
+            return _nftClient.MakeCallWithReconnect(application =>
+                application.GetStorageObject<TokensList, DoubleMapKey<ulong, byte[]>>(
+                    DoubleMapKey.Create(addressTokens.CollectionId, publicKey), Module,
+                    AddressTokensStorage));
         }
 
         public ulong? NextCollectionId()

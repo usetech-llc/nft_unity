@@ -73,6 +73,8 @@ namespace NftUnity.MethodGroups
 
         AdminList? GetAdminList(ulong collectionId);
 
+        TokensList? AddressTokens(AddressTokens addressTokens);
+
         ulong? NextCollectionId();
         
         event EventHandler<Created> CollectionCreated;

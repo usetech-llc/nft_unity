@@ -239,5 +239,17 @@ namespace NftUnity.Test.MethodGroupsTests
             Assert.Equal(AddressUtils.GetPublicKeyFromAddr(Configuration.Bob.Address).Bytes, collection!.Sponsor.Bytes);
             Assert.NotEqual(AddressUtils.GetPublicKeyFromAddr(Configuration.Bob.Address).Bytes, collection.UnconfirmedSponsor.Bytes);
         }
+
+        [Fact]
+        public async Task AddressTokensReturnsOwnedToken()
+        {
+            var itemKey = await CreateTestAliceItem();
+
+            using var client = CreateClient();
+
+            var tokens = client.CollectionManagement.AddressTokens(new AddressTokens(itemKey.CollectionId, new Address(Configuration.Alice.Address)));
+
+            Assert.Contains(tokens!.TokenIds, id => id == itemKey.ItemId);
+        }
     }
 }
