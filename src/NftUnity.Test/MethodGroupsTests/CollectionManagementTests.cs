@@ -277,5 +277,20 @@ namespace NftUnity.Test.MethodGroupsTests
             Assert.All(collection.Sponsor.Bytes, b => Assert.Equal(0, b));
         }
 
+        [Fact]
+        public async Task OffChainSchemaMatchesPreviouslySetSchema()
+        {
+            var schema = Guid.NewGuid().ToString("N");
+            var id = await CreateTestAliceCollection();
+
+            using var client = CreateClient();
+            client.CollectionManagement.SetOffChainSchema(new SetOffChainSchema(id, schema), new Address(Configuration.Alice.Address), Configuration.Alice.PrivateKey);
+
+            await WaitBlocks(2);
+            
+            var storedSchema = client.CollectionManagement.OffChainSchema(id);
+            
+            Assert.Equal(schema, storedSchema);
+        }
     }
 }

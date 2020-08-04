@@ -71,6 +71,24 @@ namespace NftUnity.MethodGroups
         string RemoveSponsor(RemoveCollectionSponsor removeCollectionSponsor, Address sender, string privateKey);
 
         /// <summary>
+        /// Set off-chain data schema. In the initial version of NFT parachain the schema will only reflect image URL. The {id} substring will be parsed to reflect the NFT id.
+        /// For example, the schema string for CryptoKitties will look like this:
+        /// https://img.cryptokitties.co/0x06012c8cf97bead5deae237070f9587f8e7a266d/{id}.png
+        /// </summary>
+        /// <param name="setOffChainSchema"></param>
+        /// <param name="sender"></param>
+        /// <param name="privateKey"></param>
+        /// <returns></returns>
+        string SetOffChainSchema(SetOffChainSchema setOffChainSchema, Address sender, string privateKey);
+
+        /// <summary>
+        /// The state variable that stores off-chain data schema for a given collection.
+        /// </summary>
+        /// <param name="collectionId"></param>
+        /// <returns></returns>
+        string? OffChainSchema(ulong collectionId);
+
+        /// <summary>
         /// Non-Fungible Mode: This method is included for compatibility with ERC-721. Return the total count of NFTs of a given Collection that belong to a given address. 
         /// Fungible Mode: Return the amount of token owned by a given address
         /// Re-fungible Mode: Same as non-fungible, but the returned value may be fractional.

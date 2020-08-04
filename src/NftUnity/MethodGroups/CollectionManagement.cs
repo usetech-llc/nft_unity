@@ -23,6 +23,7 @@ namespace NftUnity.MethodGroups
         private const string SetCollectionSponsorMethod = "set_collection_sponsor";
         private const string ConfirmSponsorshipMethod = "confirm_sponsorship";
         private const string RemoveSponsorshipMethod = "remove_collection_sponsor";
+        private const string SetOffChainSchemaMethod = "set_offchain_schema";
 
         private const string CollectionStorage = "Collection";
         private const string AdminListStorage = "AdminList";
@@ -104,6 +105,17 @@ namespace NftUnity.MethodGroups
         {
             return _nftClient.MakeCallWithReconnect(application =>
                 application.SubmitExtrinsicObject(removeCollectionSponsor, Module, RemoveSponsorshipMethod, sender, privateKey));
+        }
+
+        public string SetOffChainSchema(SetOffChainSchema setOffChainSchema, Address sender, string privateKey)
+        {
+            return _nftClient.MakeCallWithReconnect(application =>
+                application.SubmitExtrinsicObject(setOffChainSchema, Module, SetOffChainSchemaMethod, sender, privateKey));
+        }
+
+        public string? OffChainSchema(ulong collectionId)
+        {
+            return GetCollection(collectionId)?.OffChainSchema;
         }
 
         public ulong? BalanceOf(GetBalanceOf getBalanceOf)

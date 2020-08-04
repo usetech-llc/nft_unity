@@ -40,8 +40,8 @@ namespace NftUnity.Models.Collection
         public uint CustomDataSize;
 
         [Serialize(9)]
-        [PrefixedArrayConverter]
-        public byte[] OffChainSchema = null!;
+        [Converter(ConverterType = typeof(Utf8StringConverter))]
+        public string OffChainSchema = null!;
 
         [Serialize(10)]
         public PublicKey Sponsor = null!;
@@ -53,7 +53,7 @@ namespace NftUnity.Models.Collection
         {
         }
 
-        public Collection(PublicKey owner, ulong nextItemId, string name, string description, string tokenPrefix, uint customDataSize, PublicKey sponsor, PublicKey unconfirmedSponsor, CollectionMode collectionMode, AccessMode accessMode, uint decimalPoints, byte[] offChainSchema)
+        public Collection(PublicKey owner, ulong nextItemId, string name, string description, string tokenPrefix, uint customDataSize, PublicKey sponsor, PublicKey unconfirmedSponsor, CollectionMode collectionMode, AccessMode accessMode, uint decimalPoints, string offChainSchema)
         {
             Owner = owner;
             NextItemId = nextItemId;
