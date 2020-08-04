@@ -32,15 +32,11 @@ namespace NftUnity.Test
 
         public async Task<ulong> CreateTestAliceCollection(CollectionMode? mode = null)
         {
-            mode ??= new CollectionMode(new Nft());
+            mode ??= new CollectionMode(new Nft(256));
             var name = Guid.NewGuid().ToString("N");
             var description = Guid.NewGuid().ToString("N");
             var prefix = Guid.NewGuid().ToString("N")[..15];
-            var createCollection = mode.Mode.Match(
-                invalid => throw new ArgumentException(),
-                nft => new CreateCollection(name, description, prefix, mode, 0, 256u),
-                fungible => new CreateCollection(name, description, prefix, mode, 100u, 0),
-                reFungible => new CreateCollection(name, description, prefix, mode, 0, 0));
+            var createCollection = new CreateCollection(name, description, prefix, mode);
             
             var collectionCreatedTask = new TaskCompletionSource<Created>();
             using var blockClient = CreateClient();

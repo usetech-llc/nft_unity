@@ -25,9 +25,9 @@ namespace NftUnity
             set => _logger = value ?? new DoNothingLogger();
         }
 
-        public NftClientSettings(SerializerSettings serializerSettings)
+        public NftClientSettings()
         {
-            SerializerSettings = serializerSettings;
+            SerializerSettings = DefaultNftSerializerSettings();
         }
 
         public NftClientSettings(string wsEndpoint, ILogger? logger = null, TimeSpan? requestsTimeout = null, SerializerSettings? serializerSettings = null)

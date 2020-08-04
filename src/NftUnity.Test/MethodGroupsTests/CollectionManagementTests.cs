@@ -22,12 +22,10 @@ namespace NftUnity.Test.MethodGroupsTests
             var collectionName = "1111";
             var collectionDescription = "1111";
             var tokenPrefix = "1111";
-            var size = 200u;
-            var decimalPoints = 0u;
-            var mode = new CollectionMode(new Nft());
+            var mode = new CollectionMode(new Nft(200));
 
             var collectionCreatedTask = new TaskCompletionSource<Created>();
-            var createCollection = new CreateCollection(collectionName, collectionDescription, tokenPrefix, mode, decimalPoints, size);
+            var createCollection = new CreateCollection(collectionName, collectionDescription, tokenPrefix, mode);
             using var blockClient = CreateClient();
             blockClient.CollectionManagement.CollectionCreated += (sender, @event) =>
             {
@@ -55,11 +53,10 @@ namespace NftUnity.Test.MethodGroupsTests
             var description = Guid.NewGuid().ToString("N");
             var prefix = Guid.NewGuid().ToString("N")[..15];
             var size = 9u;
-            var decimalPoints = 0u;
-            var mode = new CollectionMode(new Nft());
+            var mode = new CollectionMode(new Nft(size));
             
             var collectionCreatedTask = new TaskCompletionSource<Created>();
-            var createCollection = new CreateCollection(name, description, prefix, mode, decimalPoints, size);
+            var createCollection = new CreateCollection(name, description, prefix, mode);
             using var blockClient = CreateClient();
             blockClient.CollectionManagement.CollectionCreated += (sender, @event) =>
             {

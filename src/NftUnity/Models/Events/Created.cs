@@ -11,7 +11,7 @@ namespace NftUnity.Models.Events
         public ulong Id;
 
         [Serialize(1)]
-        public CollectionMode Mode = null!;
+        public byte Mode;
 
         [Serialize(2)]
         public PublicKey Account = null!;
@@ -20,7 +20,7 @@ namespace NftUnity.Models.Events
         {
         }
 
-        public Created(ulong id, CollectionMode mode, PublicKey account)
+        public Created(ulong id, byte mode, PublicKey account)
         {
             Id = id;
             Account = account;

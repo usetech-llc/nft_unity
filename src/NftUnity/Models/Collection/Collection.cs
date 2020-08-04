@@ -2,6 +2,7 @@
 using NftUnity.Models.Collection.AccessModeEnum;
 using NftUnity.Models.Collection.CollectionModeEnum;
 using Polkadot.BinarySerializer;
+using Polkadot.BinarySerializer.Converters;
 using Polkadot.DataStructs;
 
 namespace NftUnity.Models.Collection
@@ -39,16 +40,20 @@ namespace NftUnity.Models.Collection
         public uint CustomDataSize;
 
         [Serialize(9)]
-        public PublicKey Sponsor = null!;
+        [PrefixedArrayConverter]
+        public byte[] OffChainSchema = null!;
 
         [Serialize(10)]
+        public PublicKey Sponsor = null!;
+
+        [Serialize(11)]
         public PublicKey UnconfirmedSponsor = null!;
         
         public Collection()
         {
         }
 
-        public Collection(PublicKey owner, ulong nextItemId, string name, string description, string tokenPrefix, uint customDataSize, PublicKey sponsor, PublicKey unconfirmedSponsor, CollectionMode collectionMode, AccessMode accessMode, uint decimalPoints)
+        public Collection(PublicKey owner, ulong nextItemId, string name, string description, string tokenPrefix, uint customDataSize, PublicKey sponsor, PublicKey unconfirmedSponsor, CollectionMode collectionMode, AccessMode accessMode, uint decimalPoints, byte[] offChainSchema)
         {
             Owner = owner;
             NextItemId = nextItemId;
@@ -61,6 +66,7 @@ namespace NftUnity.Models.Collection
             CollectionMode = collectionMode;
             AccessMode = accessMode;
             DecimalPoints = decimalPoints;
+            OffChainSchema = offChainSchema;
         }
     }
 }

@@ -70,24 +70,16 @@ Value: {value} is {length} long.");
         [Serialize(3)]
         public CollectionMode Mode = null!;
 
-        [Serialize(4)]
-        public uint DecimalPoints;
-
-        [Serialize(5)]
-        public uint CustomDataSize { get; set; }
-
         public CreateCollection()
         {
         }
 
-        public CreateCollection(string name, string description, string tokenPrefix, CollectionMode mode, uint decimalPoints, uint customDataSize)
+        public CreateCollection(string name, string description, string tokenPrefix, CollectionMode mode)
         {
             Name = name;
             Description = description;
             TokenPrefix = tokenPrefix;
-            CustomDataSize = customDataSize;
             Mode = mode;
-            DecimalPoints = decimalPoints;
         }
     }
 }
