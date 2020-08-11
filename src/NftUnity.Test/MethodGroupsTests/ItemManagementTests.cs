@@ -139,7 +139,7 @@ namespace NftUnity.Test.MethodGroupsTests
 
             await WaitBlocks(2);
 
-            client.ItemManagement.TransferFrom(new TransferFrom(new Address(Configuration.Charlie.Address), key),
+            client.ItemManagement.TransferFrom(new TransferFrom(new Address(Configuration.Alice.Address), new Address(Configuration.Charlie.Address), key, 0),
                 new Address(Configuration.Bob.Address), Configuration.Bob.PrivateKey);
 
             await WaitBlocks(2);
@@ -162,7 +162,7 @@ namespace NftUnity.Test.MethodGroupsTests
             var key = await CreateTestAliceItem();
 
             using var client = CreateClient();
-            client.ItemManagement.TransferFrom(new TransferFrom(new Address(Configuration.Charlie.Address), key), new Address(Configuration.Bob.Address), Configuration.Bob.PrivateKey);
+            client.ItemManagement.TransferFrom(new TransferFrom(new Address(Configuration.Alice.Address), new Address(Configuration.Charlie.Address), key, 0), new Address(Configuration.Bob.Address), Configuration.Bob.PrivateKey);
 
             await WaitBlocks(2);
 

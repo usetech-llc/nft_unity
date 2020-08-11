@@ -18,9 +18,6 @@ namespace NftUnity.Models.Collection
         [Serialize(2)]
         public AccessMode AccessMode = null!;
 
-        [Serialize(3)]
-        public ulong NextItemId;
-
         [Serialize(4)]
         public uint DecimalPoints;
 
@@ -53,10 +50,9 @@ namespace NftUnity.Models.Collection
         {
         }
 
-        public Collection(PublicKey owner, ulong nextItemId, string name, string description, string tokenPrefix, uint customDataSize, PublicKey sponsor, PublicKey unconfirmedSponsor, CollectionMode collectionMode, AccessMode accessMode, uint decimalPoints, string offChainSchema)
+        public Collection(PublicKey owner, string name, string description, string tokenPrefix, uint customDataSize, PublicKey sponsor, PublicKey unconfirmedSponsor, CollectionMode collectionMode, AccessMode accessMode, uint decimalPoints, string offChainSchema)
         {
             Owner = owner;
-            NextItemId = nextItemId;
             Name = name;
             Description = description;
             TokenPrefix = tokenPrefix;

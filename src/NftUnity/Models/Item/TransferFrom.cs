@@ -8,19 +8,28 @@ namespace NftUnity.Models.Item
     {
         [Serialize(0)]
         [AddressConverter]
-        public Address Recipient = null!;
+        public Address From;
 
         [Serialize(1)]
-        public ItemKey Key = null!;
+        [AddressConverter]
+        public Address Recipient;
+
+        [Serialize(2)]
+        public ItemKey Key;
+
+        [Serialize(3)]
+        public ulong Value;
 
         public TransferFrom()
         {
         }
 
-        public TransferFrom(Address recipient, ItemKey key)
+        public TransferFrom(Address @from, Address recipient, ItemKey key, ulong value)
         {
-            Key = key;
+            From = @from;
             Recipient = recipient;
+            Key = key;
+            Value = value;
         }
     }
 }
