@@ -19,6 +19,11 @@ namespace NftUnity
         
         public SerializerSettings SerializerSettings { get; set; }
 
+        /// <summary>
+        /// How many times client should attempt to reconnect before fail.
+        /// </summary>
+        public int MaxReconnectCount { get; set; } = 1;
+
         public ILogger Logger
         {
             get => _logger;
@@ -30,12 +35,13 @@ namespace NftUnity
             SerializerSettings = DefaultNftSerializerSettings();
         }
 
-        public NftClientSettings(string wsEndpoint, ILogger? logger = null, TimeSpan? requestsTimeout = null, SerializerSettings? serializerSettings = null)
+        public NftClientSettings(string wsEndpoint, ILogger? logger = null, TimeSpan? requestsTimeout = null, SerializerSettings? serializerSettings = null, int maxReconnectCount = 1)
         {
             WsEndpoint = wsEndpoint;
             SerializerSettings = serializerSettings ?? DefaultNftSerializerSettings();
             Logger = logger!;
             RequestsTimeout = requestsTimeout;
+            MaxReconnectCount = maxReconnectCount;
         }
 
         public static SerializerSettings DefaultNftSerializerSettings()

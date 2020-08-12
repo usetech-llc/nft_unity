@@ -5,7 +5,7 @@ namespace NftUnity.Extensions
 {
     public static class NftClientExtensions
     {
-        public static void MakeCallWithReconnect(this INftClient nftClient, Action<IApplication> call)
+        public static void MakeCallWithReconnect(this INftClient nftClient, Action<IApplication> call, int retryCount)
         {
             try
             {
@@ -14,11 +14,18 @@ namespace NftUnity.Extensions
             catch (Exception ex) when (IsDisconnectedException(ex))
             {
                 nftClient.Connect();
-                call(nftClient.GetApplication());
+                if (retryCount <= 1)
+                {
+                    call(nftClient.GetApplication());
+                }
+                else
+                {
+                    MakeCallWithReconnect(nftClient, call, retryCount - 1);
+                }
             }
         }
 
-        public static T MakeCallWithReconnect<T>(this INftClient nftClient, Func<IApplication, T> call)
+        public static T MakeCallWithReconnect<T>(this INftClient nftClient, Func<IApplication, T> call, int retryCount)
         {
             try
             {
@@ -27,7 +34,14 @@ namespace NftUnity.Extensions
             catch (Exception ex) when (IsDisconnectedException(ex) || ex is TimeoutException)
             {
                 nftClient.Connect();
-                return call(nftClient.GetApplication());
+                if (retryCount <= 1)
+                {
+                    return call(nftClient.GetApplication());
+                }
+                else
+                {
+                    return MakeCallWithReconnect(nftClient, call, retryCount - 1);
+                }
             }
         }
         

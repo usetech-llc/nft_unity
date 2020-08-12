@@ -89,7 +89,7 @@ namespace NftUnity.Test
                     }
                     nextBlock.SetResult(block);
                 });
-            });
+            }, client.Settings.MaxReconnectCount);
 
             await nextBlock.Task;
         }

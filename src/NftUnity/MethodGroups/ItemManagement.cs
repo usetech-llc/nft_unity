@@ -35,36 +35,36 @@ namespace NftUnity.MethodGroups
         public string CreateItem(CreateItem createItem, Address sender, string privateKey)
         {
             return _nftClient.MakeCallWithReconnect(application =>
-                application.SubmitExtrinsicObject(createItem, Module, CreateItemMethod, sender, privateKey));
+                application.SubmitExtrinsicObject(createItem, Module, CreateItemMethod, sender, privateKey), _nftClient.Settings.MaxReconnectCount);
         }
 
         public string BurnItem(ItemKey key, Address sender, string privateKey)
         {
             return _nftClient.MakeCallWithReconnect(application =>
-                application.SubmitExtrinsicObject(key, Module, BurnItemMethod, sender, privateKey));
+                application.SubmitExtrinsicObject(key, Module, BurnItemMethod, sender, privateKey), _nftClient.Settings.MaxReconnectCount);
         }
 
         public string Transfer(Transfer transfer, Address sender, string privateKey)
         {
             return _nftClient.MakeCallWithReconnect(application =>
-                application.SubmitExtrinsicObject(transfer, Module, TransferMethod, sender, privateKey));
+                application.SubmitExtrinsicObject(transfer, Module, TransferMethod, sender, privateKey), _nftClient.Settings.MaxReconnectCount);
         }
 
         public string TransferFrom(TransferFrom transferFrom, Address sender, string privateKey)
         {
             return _nftClient.MakeCallWithReconnect(application =>
-                application.SubmitExtrinsicObject(transferFrom, Module, TransferFromMethod, sender, privateKey));
+                application.SubmitExtrinsicObject(transferFrom, Module, TransferFromMethod, sender, privateKey), _nftClient.Settings.MaxReconnectCount);
         }
 
         public string Approve(Approve approve, Address sender, string privateKey)
         {
             return _nftClient.MakeCallWithReconnect(application =>
-                application.SubmitExtrinsicObject(approve, Module, ApproveMethod, sender, privateKey));
+                application.SubmitExtrinsicObject(approve, Module, ApproveMethod, sender, privateKey), _nftClient.Settings.MaxReconnectCount);
         }
 
         public NftItem? GetNftItem(ItemKey key)
         {
-            return _nftClient.MakeCallWithReconnect(application => application.GetStorageObject<NftItem, DoubleMapKey<ulong, ulong>>(StorageKey(key), Module, NftItemStorage));
+            return _nftClient.MakeCallWithReconnect(application => application.GetStorageObject<NftItem, DoubleMapKey<ulong, ulong>>(StorageKey(key), Module, NftItemStorage), _nftClient.Settings.MaxReconnectCount);
         }
 
         private static DoubleMapKey<ulong, ulong> StorageKey(ItemKey key)
@@ -75,7 +75,7 @@ namespace NftUnity.MethodGroups
         public ApprovedList? GetApproved(ItemKey key)
         {
             return _nftClient.MakeCallWithReconnect(application => 
-                application.GetStorageObject<ApprovedList, DoubleMapKey<ulong, ulong>>(StorageKey(key), Module, ApprovedStorage));
+                application.GetStorageObject<ApprovedList, DoubleMapKey<ulong, ulong>>(StorageKey(key), Module, ApprovedStorage), _nftClient.Settings.MaxReconnectCount);
         }
 
         public PublicKey? GetOwner(ItemKey key)
@@ -86,7 +86,7 @@ namespace NftUnity.MethodGroups
         public ulong? NextId(ulong collectionId)
         {
             return _nftClient.MakeCallWithReconnect(application =>
-                application.GetStorageObject<ulong?, MapKey<ulong>>(MapKey.Create(collectionId), Module, ItemListIndexStorage));
+                application.GetStorageObject<ulong?, MapKey<ulong>>(MapKey.Create(collectionId), Module, ItemListIndexStorage), _nftClient.Settings.MaxReconnectCount);
         }
 
         private event EventHandler<ItemCreated>? ItemCreated = null;

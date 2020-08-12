@@ -123,7 +123,7 @@ namespace NftUnity
                         throw;
                     }
                 });
-            });
+            }, Settings.MaxReconnectCount);
         }
 
         public void Dispose()

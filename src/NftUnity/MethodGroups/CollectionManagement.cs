@@ -46,7 +46,7 @@ namespace NftUnity.MethodGroups
                 Module, 
                 CreateCollectionMethod, 
                 sender,
-                privateKey));
+                privateKey), _nftClient.Settings.MaxReconnectCount);
         }
 
         public string ChangeCollectionOwner(ChangeOwner changeOwner, Address sender, string privateKey)
@@ -56,7 +56,7 @@ namespace NftUnity.MethodGroups
                 Module, 
                 ChangeOwnerMethod, 
                 sender,
-                privateKey));
+                privateKey), _nftClient.Settings.MaxReconnectCount);
         }
 
         public string DestroyCollection(DestroyCollection destroyCollection, Address sender, string privateKey)
@@ -66,7 +66,7 @@ namespace NftUnity.MethodGroups
                 Module, 
                 DestroyCollectionMethod, 
                 sender,
-                privateKey));
+                privateKey), _nftClient.Settings.MaxReconnectCount);
         }
 
         public string AddCollectionAdmin(AddCollectionAdmin addCollectionAdmin, Address sender, string privateKey)
@@ -76,7 +76,7 @@ namespace NftUnity.MethodGroups
                 Module, 
                 AddAdminMethod, 
                 sender,
-                privateKey));
+                privateKey), _nftClient.Settings.MaxReconnectCount);
         }
 
         public string RemoveCollectionAdmin(RemoveCollectionAdmin removeCollectionAdmin, Address sender, string privateKey)
@@ -86,31 +86,31 @@ namespace NftUnity.MethodGroups
                 Module, 
                 RemoveAdminMethod, 
                 sender,
-                privateKey));
+                privateKey), _nftClient.Settings.MaxReconnectCount);
         }
 
         public string SetCollectionSponsor(SetCollectionSponsor setCollectionSponsor, Address sender, string privateKey)
         {
             return _nftClient.MakeCallWithReconnect(application =>
-                application.SubmitExtrinsicObject(setCollectionSponsor, Module, SetCollectionSponsorMethod, sender, privateKey));
+                application.SubmitExtrinsicObject(setCollectionSponsor, Module, SetCollectionSponsorMethod, sender, privateKey), _nftClient.Settings.MaxReconnectCount);
         }
 
         public string ConfirmSponsorship(ulong collectionId, Address sender, string privateKey)
         {
             return _nftClient.MakeCallWithReconnect(application =>
-                application.SubmitExtrinsicObject(collectionId, Module, ConfirmSponsorshipMethod, sender, privateKey));
+                application.SubmitExtrinsicObject(collectionId, Module, ConfirmSponsorshipMethod, sender, privateKey), _nftClient.Settings.MaxReconnectCount);
         }
 
         public string RemoveSponsor(RemoveCollectionSponsor removeCollectionSponsor, Address sender, string privateKey)
         {
             return _nftClient.MakeCallWithReconnect(application =>
-                application.SubmitExtrinsicObject(removeCollectionSponsor, Module, RemoveSponsorshipMethod, sender, privateKey));
+                application.SubmitExtrinsicObject(removeCollectionSponsor, Module, RemoveSponsorshipMethod, sender, privateKey), _nftClient.Settings.MaxReconnectCount);
         }
 
         public string SetOffChainSchema(SetOffChainSchema setOffChainSchema, Address sender, string privateKey)
         {
             return _nftClient.MakeCallWithReconnect(application =>
-                application.SubmitExtrinsicObject(setOffChainSchema, Module, SetOffChainSchemaMethod, sender, privateKey));
+                application.SubmitExtrinsicObject(setOffChainSchema, Module, SetOffChainSchemaMethod, sender, privateKey), _nftClient.Settings.MaxReconnectCount);
         }
 
         public string? OffChainSchema(ulong collectionId)
@@ -120,12 +120,12 @@ namespace NftUnity.MethodGroups
 
         public ulong? BalanceOf(GetBalanceOf getBalanceOf)
         {
-            return _nftClient.MakeCallWithReconnect(application => application.GetStorageObject<ulong?, DoubleMapKey<ulong, byte[]>>(new DoubleMapKey<ulong, byte[]>(getBalanceOf.CollectionId, AddressUtils.GetPublicKeyFromAddr(getBalanceOf.Account).Bytes), Module, BalanceStorage));
+            return _nftClient.MakeCallWithReconnect(application => application.GetStorageObject<ulong?, DoubleMapKey<ulong, byte[]>>(new DoubleMapKey<ulong, byte[]>(getBalanceOf.CollectionId, AddressUtils.GetPublicKeyFromAddr(getBalanceOf.Account).Bytes), Module, BalanceStorage), _nftClient.Settings.MaxReconnectCount);
         }
 
         public AdminList? GetAdminList(ulong collectionId)
         {
-            return _nftClient.MakeCallWithReconnect(application => application.GetStorageObject<AdminList, ulong>(collectionId, Module, AdminListStorage));
+            return _nftClient.MakeCallWithReconnect(application => application.GetStorageObject<AdminList, ulong>(collectionId, Module, AdminListStorage), _nftClient.Settings.MaxReconnectCount);
         }
 
         public TokensList? AddressTokens(AddressTokens addressTokens)
@@ -134,18 +134,18 @@ namespace NftUnity.MethodGroups
             return _nftClient.MakeCallWithReconnect(application =>
                 application.GetStorageObject<TokensList, DoubleMapKey<ulong, byte[]>>(
                     DoubleMapKey.Create(addressTokens.CollectionId, publicKey), Module,
-                    AddressTokensStorage));
+                    AddressTokensStorage), _nftClient.Settings.MaxReconnectCount);
         }
 
         public ulong? NextCollectionId()
         {
-            return _nftClient.MakeCallWithReconnect(application => application.GetStorageObject<ulong?, Empty>(Empty.Instance, Module, NextIdStorage));
+            return _nftClient.MakeCallWithReconnect(application => application.GetStorageObject<ulong?, Empty>(Empty.Instance, Module, NextIdStorage), _nftClient.Settings.MaxReconnectCount);
         }
 
         private event EventHandler<Created>? CollectionCreated;
         public Collection? GetCollection(ulong id)
         {
-            return _nftClient.MakeCallWithReconnect(application => application.GetStorageObject<Collection, ulong>(id, Module, CollectionStorage));
+            return _nftClient.MakeCallWithReconnect(application => application.GetStorageObject<Collection, ulong>(id, Module, CollectionStorage), _nftClient.Settings.MaxReconnectCount);
         }
 
         event EventHandler<Created> ICollectionManagement.CollectionCreated
