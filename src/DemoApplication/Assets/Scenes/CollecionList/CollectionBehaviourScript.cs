@@ -22,6 +22,9 @@ public class CollectionBehaviourScript : MonoBehaviour
 
     public GameObject createCollectionPopup;
     public GameObject createCollectionPopupScript;
+
+    public GameObject mintTokenPopup;
+    public GameObject mintTokenPopupScript;
     
     private INftClient Client => NftClientFactory.CreateClient(GameSettings.Uri);
     private ConcurrentQueue<Action> _updateQueue = new ConcurrentQueue<Action>();
@@ -67,8 +70,21 @@ public class CollectionBehaviourScript : MonoBehaviour
             _collectionGameObjects[id] = collectionGameObject;
         }
 
-        collectionGameObject.GetComponent<CollectionItem>().SetCollection(_loadedCollections[id], id);
+        var collectionItemScript = collectionGameObject.GetComponent<CollectionItem>();
+        collectionItemScript.SetCollection(_loadedCollections[id], id);
+        collectionItemScript.mintToken.AddListener(_ => MintToken(id));  
         SortCollections();
+    }
+
+    private void MintToken(ulong collectionId)
+    {
+        mintTokenPopup.SetActive(true);
+        mintTokenPopupScript.GetComponent<CreateTokenScript>().SetCollection(collectionId, _loadedCollections[collectionId]);
+    }
+
+    public void CloseMintTokenPopup()
+    {
+        mintTokenPopup.SetActive(false);
     }
 
     private void SortCollections()
@@ -147,7 +163,7 @@ public class CollectionBehaviourScript : MonoBehaviour
     {
         var createCollectionPopupBehaviour =
             createCollectionPopupScript.GetComponent<CreateCollectionPopupBehaviour>();
-        createCollectionPopupBehaviour.Reset();
+        createCollectionPopupBehaviour.ResetData();
         createCollectionPopupBehaviour.NftClient = Client;
         createCollectionPopup.SetActive(true);
     }

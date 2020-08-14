@@ -9,6 +9,7 @@ using NftUnity.Models.Events;
 using NftUnity.Models.Item;
 using Polkadot.Utils;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class CollectionItem : MonoBehaviour
@@ -27,6 +28,8 @@ public class CollectionItem : MonoBehaviour
     public GameObject firstTokenItem;
     public GameObject tokenItemTemplate;
     public GameObject tokenContent;
+
+    public UnityEvent<CollectionItem> mintToken = new UnityEvent<CollectionItem>();
     
     private List<(ItemKey key, NftItem item)> _tokens = new List<(ItemKey, NftItem)>();
     private List<GameObject> _tokenListItems = new List<GameObject>();
@@ -208,5 +211,10 @@ public class CollectionItem : MonoBehaviour
         
         _tokens.Clear();
         _tokenListItems.Clear();
+    }
+
+    public void OnMintToken()
+    {
+        mintToken?.Invoke(this);
     }
 }

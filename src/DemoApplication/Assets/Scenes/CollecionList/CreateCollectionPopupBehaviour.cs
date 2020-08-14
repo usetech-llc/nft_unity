@@ -119,7 +119,7 @@ public class CreateCollectionPopupBehaviour : MonoBehaviour
         return size ?? 0;
     }
 
-    public void Reset()
+    public void ResetData()
     {
         NameValidator?.ClearErrors();
         DescriptionValidator?.ClearErrors();

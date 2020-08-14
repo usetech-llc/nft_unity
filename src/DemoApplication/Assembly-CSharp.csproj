@@ -66,6 +66,8 @@
      <Compile Include="Assets\Templates\CreateCollectionField\CreateCollectionField.cs" />
      <Compile Include="Assets\Validators\ValidateNotEmpty.cs" />
      <Compile Include="Assets\Validators\ValidatorSet.cs" />
+     <Compile Include="Assets\Scenes\CollecionList\CreateTokenScript.cs" />
+     <Compile Include="Assets\Templates\EditTokenField\EditTokenFieldScript.cs" />
  <Reference Include="Unity.Timeline.Editor">
  <HintPath>D:/work/nft_unity/src/DemoApplication/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
  </Reference>

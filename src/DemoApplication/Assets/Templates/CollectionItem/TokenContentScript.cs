@@ -71,7 +71,12 @@ public class TokenContentScript : MonoBehaviour
         for (int i = offset + length - 1; i >= offset; i--)
         {
             parsed <<= 8;
-            parsed |= itemData[i];
+            byte value = 0;
+            if (itemData.Length > i)
+            {
+                value = itemData[i];
+            }
+            parsed |= value;
         }
 
         return parsed;
