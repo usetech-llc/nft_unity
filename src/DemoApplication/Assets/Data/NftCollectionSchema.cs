@@ -31,7 +31,7 @@ public class NftCollectionSchema
 
     private static string FilePath(ulong collectionId)
     {
-        return $"collection-schema-{collectionId}";
+        return Application.persistentDataPath + $"/collection-schema-{collectionId}";
     }
 
     [CanBeNull]

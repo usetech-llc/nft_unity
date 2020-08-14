@@ -10,7 +10,7 @@ namespace Scenes.Login
 {
     public class LoginBehaviourScript : MonoBehaviour
     {
-        private const string LoginFileStorage = "login-settings.json";
+        private static string LoginFileStorage => Application.persistentDataPath + "/login-settings.json";
         
         public InputField uriText;
         public InputField privateKeyText;
